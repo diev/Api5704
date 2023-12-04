@@ -1,0 +1,67 @@
+﻿#region License
+/*
+Copyright 2022-2023 Dmitrii Evdokimov
+Open source software
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+#endregion
+
+using System.Security.Cryptography.Pkcs; //TODO: Windows only?
+
+namespace Api5704;
+
+/// <summary>
+/// Класс для работы с форматом PKCS#7.
+/// </summary>
+internal static class PKCS7
+{
+    private static string CspTest => ConfigReader.GetString(nameof(CspTest));
+
+    /// <summary>
+    /// Извлечь из PKCS#7 с ЭП чистый исходный текст.
+    /// Криптопровайдер и проверка ЭП здесь не используются - только извлечение блока данных из формата ASN.1
+    /// </summary>
+    /// <param name="data">Массив байтов с сообщением в формате PKCS#7.</param>
+    /// <returns>Массив байтов с исходным сообщением без ЭП.</returns>
+    public static byte[] CleanSign(byte[] data)
+    {
+        var signedCms = new SignedCms();
+        signedCms.Decode(data);
+
+        return signedCms.ContentInfo.Content;
+    }
+
+    /// <summary>
+    /// Подписать файл с помощью.
+    /// </summary>
+    /// <param name="file">Имя исходного файла.</param>
+    /// <param name="resultFile">Имя подписанного файла.</param>
+    /// <exception cref="FileNotFoundException"></exception>
+    public static async Task SignFileAsync(string file, string resultFile)
+    {
+        // "C:\Program Files\Crypto Pro\CSP\csptest.exe"
+        // -sfsign -sign -in %1 -out %2 -my %3 [-password %4] -add -addsigtime
+
+        string cmdline = ConfigReader.GetString(nameof(CspTest) + "SignFile")
+            .Replace("%1", file)
+            .Replace("%2", resultFile);
+
+        await Exec.StartAsync(CspTest, cmdline);
+
+        if (!File.Exists(resultFile))
+        {
+            throw new FileNotFoundException("Signed file not created.", resultFile);
+        }
+    }
+}

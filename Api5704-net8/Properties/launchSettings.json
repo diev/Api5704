@@ -1,0 +1,32 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "dlrequest": {
+      "commandName": "Project",
+      "commandLineArgs": "dlrequest\r\nrequest.xml.sig\r\ndlrequest.result"
+    },
+    "dlanswer": {
+      "commandName": "Project",
+      "commandLineArgs": "dlanswer\r\n6c80c1c8-f620-491c-994a-6886706d85dc\r\ndlanswer.result"
+    },
+    "dlputanswer": {
+      "commandName": "Project",
+      "commandLineArgs": "dlputanswer\r\n945cb186-0d50-45ff-8823-797942987638\r\ndlputanswer.result"
+    },
+    "dlput": {
+      "commandName": "Project",
+      "commandLineArgs": "dlput\r\nqcb_put.xml.sig\r\ndlput.result"
+    },
+    "certadd": {
+      "commandName": "Project",
+      "commandLineArgs": "certadd\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertadd.result"
+    },
+    "certrevoke": {
+      "commandName": "Project",
+      "commandLineArgs": "certrevoke\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertrevoke.result"
+    }
+  }
+}

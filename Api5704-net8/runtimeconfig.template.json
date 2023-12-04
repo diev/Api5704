@@ -1,0 +1,26 @@
+{
+  "configProperties": {
+    "MyThumbprint": "79964228d60c5bec78df9d8434dea6a19530749c",
+    "VerboseClient": true,
+
+    "ServerAddress": "https://reports.demo.nbki.ru/qbch/",
+    "ServerThumbprint": "eeda799503a8244ffe97ac12b2c3db0a8b2d28bb",
+    "ValidateTls": true,
+    "ValidateThumbprint": true,
+    "VerboseServer": true,
+
+    "UseProxy": true,
+    "ProxyAddress": "http://192.168.2.1:3128",
+
+    "SignFile": true,
+    "CleanSign": true,
+
+    "CspTest": "C:\\Program Files\\Crypto Pro\\CSP\\csptest.exe",
+    "CspTestSignFile": "-sfsign -sign -in %1 -out %2 -my 79964228d60c5bec78df9d8434dea6a19530749c -add -addsigtime",
+
+    "//Demo.ServerAddress": "https://reports.demo.nbki.ru/qbch/",
+    "//Demo.ServerThumbprint": "eeda799503a8244ffe97ac12b2c3db0a8b2d28bb",
+    "//Work.ServerAddress": "https://reports.nbki.ru/qbch/",
+    "//Work.ServerThumbprint": "C2B004B5A50A99B235DFDF2C0798897D8DF5AE22"
+  }
+}

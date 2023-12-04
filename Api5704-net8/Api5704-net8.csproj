@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Api5704</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyVersion>8.23.12.04</AssemblyVersion>
+    <FileVersion>8.23.12.04</FileVersion>
+    <Company>CIBANK</Company>
+    <Copyright>2022-2023 Dmitrii Evdokimov</Copyright>
+    <NeutralLanguage>ru-RU</NeutralLanguage>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release call Properties\PostBuild.bat" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>
