@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release call Properties\PostBuild.bat" />
+    <Exec Command="if $(ConfigurationName) == Release call Properties\PostBuild.bat" Condition=" '$(OS)' == 'Windows_NT' " />
   </Target>
 
   <ItemGroup>

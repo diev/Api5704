@@ -2,7 +2,7 @@
 rem Add this section to .csproj before </Project>:
 
 rem <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-rem   <Exec Command="if $(ConfigurationName) == Release call Properties\PostBuild.bat" />
+rem   <Exec Command="if $(ConfigurationName) == Release call Properties\PostBuild.bat" Condition=" '$(OS)' == 'Windows_NT' " />
 rem </Target>
 
 setlocal
