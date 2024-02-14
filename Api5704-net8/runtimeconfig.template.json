@@ -20,6 +20,8 @@
 
     "//Demo.ServerAddress": "https://reports.demo.nbki.ru/qbch/",
     "//Demo.ServerThumbprint": "eeda799503a8244ffe97ac12b2c3db0a8b2d28bb",
+    "//Alfa.ServerAddress": "https://reports.test-alfa.nbki.ru/qbch/",
+    "//Alfa.ServerThumbprint": "eeda799503a8244ffe97ac12b2c3db0a8b2d28bb",
     "//Work.ServerAddress": "https://reports.nbki.ru/qbch/",
     "//Work.ServerThumbprint": "C2B004B5A50A99B235DFDF2C0798897D8DF5AE22"
   }

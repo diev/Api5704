@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-Copyright 2022-2023 Dmitrii Evdokimov
+Copyright 2022-2024 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,7 +76,7 @@ internal class Program
     {
         string usage = @"
 Предоставление сведений о среднемесячных платежах субъектов кредитных историй:
-  Api5704-net6 запрос параметры
+  Api5704-net8 запрос параметры
 
 dlput – передача от БКИ данных, необходимых для формирования и предоставления
   пользователям кредитных историй сведений о среднемесячных платежах Субъекта.
