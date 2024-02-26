@@ -1,27 +1,27 @@
 {
   "configProperties": {
-    "MyThumbprint": "79964228d60c5bec78df9d8434dea6a19530749c",
+    "MyThumbprint": "0000d4c1d565f9d071f137cc145e166b3aa71cd9",
     "VerboseClient": true,
 
     "ServerAddress": "https://reports.demo.nbki.ru/qbch/",
-    "ServerThumbprint": "eeda799503a8244ffe97ac12b2c3db0a8b2d28bb",
+    "ServerThumbprint": "7FA58BA64CCD41DB1AD23CD78554C4E8274ECE6A",
     "ValidateTls": true,
     "ValidateThumbprint": true,
     "VerboseServer": true,
 
-    "UseProxy": true,
+    "UseProxy": false,
     "ProxyAddress": "http://192.168.2.1:3128",
 
     "SignFile": true,
     "CleanSign": true,
 
     "CspTest": "C:\\Program Files\\Crypto Pro\\CSP\\csptest.exe",
-    "CspTestSignFile": "-sfsign -sign -in %1 -out %2 -my 79964228d60c5bec78df9d8434dea6a19530749c -add -addsigtime",
+    "CspTestSignFile": "-sfsign -sign -in %1 -out %2 -my 0000d4c1d565f9d071f137cc145e166b3aa71cd9 -add -addsigtime",
 
     "//Demo.ServerAddress": "https://reports.demo.nbki.ru/qbch/",
-    "//Demo.ServerThumbprint": "eeda799503a8244ffe97ac12b2c3db0a8b2d28bb",
+    "//Demo.ServerThumbprint": "7FA58BA64CCD41DB1AD23CD78554C4E8274ECE6A",
     "//Alfa.ServerAddress": "https://reports.test-alfa.nbki.ru/qbch/",
-    "//Alfa.ServerThumbprint": "eeda799503a8244ffe97ac12b2c3db0a8b2d28bb",
+    "//Alfa.ServerThumbprint": "7FA58BA64CCD41DB1AD23CD78554C4E8274ECE6A",
     "//Work.ServerAddress": "https://reports.nbki.ru/qbch/",
     "//Work.ServerThumbprint": "C2B004B5A50A99B235DFDF2C0798897D8DF5AE22"
   }

@@ -1,9 +1,26 @@
 Attribute VB_Name = "RequestModule"
 Option Explicit
 
+'Версия запроса API: 1.2
+'Редакция: 2024-02-26
+
+'ИНН
 Const INN As String = "7831001422"
+
+'ОГРН
 Const OGRN As String = "1027800000095"
-Const BANK As String = "Акционерное общество ""Банк"""
+
+'КодВидаПользователя
+Const KVP As String = "3"
+
+'ПризнакРегистрацииРФ
+Const PRRF As String = "1"
+
+'ПолноеНаименование
+Const BANK As String = "АКЦИОНЕРНОЕ ОБЩЕСТВО ""БАНК"""
+
+'СокращенноеНаименование
+Const BNK As String = "АО ""БАНК"""
 
 Public Sub CreateDlRequest()
     Dim XDoc As Object, xmlVersion As Object, root As Object
@@ -67,42 +84,24 @@ Public Sub CreateDlRequest()
     
     'Дата рождения
     Dim dr As String: dr = Format(Cells(ActiveCell.Row, i), "yyyy-MM-dd"): i = i + 1
-    'Место рождения
-    Dim mr As String: mr = Cells(ActiveCell.Row, i).Text: i = i + 1
     
     'Документ
     Dim id As String: id = Cells(ActiveCell.Row, i).Text: i = i + 1
-    'Наименование иного документа (14)
-    Dim td As String: td = Cells(ActiveCell.Row, i).Text: i = i + 1
     'Серия
     Dim sd As String: sd = Cells(ActiveCell.Row, i).Text: i = i + 1
     'Номер
     Dim nd As String: nd = Cells(ActiveCell.Row, i).Text: i = i + 1
     'Дата выдачи
     Dim vd As String: vd = Format(Cells(ActiveCell.Row, i), "yyyy-MM-dd"): i = i + 1
-    'Орган
-    Dim od As String: od = Cells(ActiveCell.Row, i).Text: i = i + 1
-    'КП
-    Dim kd As String: kd = Cells(ActiveCell.Row, i).Text: i = i + 1
-    'Срок действия
-    Dim ed As String: ed = Format(Cells(ActiveCell.Row, i), "yyyy-MM-dd"): i = i + 1
     
     'Документ2
     Dim id2 As String: id2 = Cells(ActiveCell.Row, i).Text: i = i + 1
-    'Наименование иного документа (14)
-    Dim td2 As String: td2 = Cells(ActiveCell.Row, i).Text: i = i + 1
     'Серия2
     Dim sd2 As String: sd2 = Cells(ActiveCell.Row, i).Text: i = i + 1
     'Номер2
     Dim nd2 As String: nd2 = Cells(ActiveCell.Row, i).Text: i = i + 1
     'Дата выдачи2
     Dim vd2 As String: vd2 = Format(Cells(ActiveCell.Row, i), "yyyy-MM-dd"): i = i + 1
-    'Орган2
-    Dim od2 As String: od2 = Cells(ActiveCell.Row, i).Text: i = i + 1
-    'КП2
-    Dim kd2 As String: kd2 = Cells(ActiveCell.Row, i).Text: i = i + 1
-    'Срок действия2
-    Dim ed2 As String: ed2 = Format(Cells(ActiveCell.Row, i), "yyyy-MM-dd"): i = i + 1
     
     'ИНН
     Dim inn2 As String: inn2 = Cells(ActiveCell.Row, i).Text: i = i + 1
@@ -137,11 +136,11 @@ Public Sub CreateDlRequest()
     'ЗапросСведенийОПлатежах
     Set root = XDoc.createElement("ЗапросСведенийОПлатежах")
     XDoc.appendChild root
-    root.setAttribute "Версия", "1.1" 'const
-    root.setAttribute "ИдентификаторЗапроса", iz
+    root.SetAttribute "Версия", "1.2" 'const
+    root.SetAttribute "ИдентификаторЗапроса", iz
     '1 – абонент запрашивает сведения только у запрашиваемого КБКИ;
     '2 – абонент запрашивает сведения всех КБКИ путем обращения в одно КБКИ (режим «одно окно»).
-    root.setAttribute "ТипЗапроса", tz
+    root.SetAttribute "ТипЗапроса", tz
     
     'Абонент
     Set abonent = XDoc.createElement("Абонент")
@@ -173,6 +172,8 @@ Public Sub CreateDlRequest()
         
             'ЮридическоеЛицо
             Set person = XDoc.createElement("ЮридическоеЛицо")
+            person.SetAttribute "КодВидаПользователя", KVP
+            person.SetAttribute "ПризнакРегистрацииРФ", PRRF
     
                 'ИНН
                 Set elem = XDoc.createElement("ИНН")
@@ -187,6 +188,11 @@ Public Sub CreateDlRequest()
                 'ПолноеНаименование
                 Set elem = XDoc.createElement("ПолноеНаименование")
                 elem.Text = BANK 'const
+                person.appendChild elem
+    
+                'СокращенноеНаименование
+                Set elem = XDoc.createElement("СокращенноеНаименование")
+                elem.Text = BNK 'const
                 person.appendChild elem
     
             '/ЮридическоеЛицо
@@ -250,56 +256,9 @@ Public Sub CreateDlRequest()
             elem.Text = dr
             abonent.appendChild elem
     
-            If Len(mr) > 0 Then 'optional
-                'МестоРождения
-                Set elem = XDoc.createElement("МестоРождения")
-                elem.Text = mr
-                abonent.appendChild elem
-            End If
-    
             'ДокументЛичности
             Set doc = XDoc.createElement("ДокументЛичности")
-            
-                If Len(sd) > 0 Then 'optional
-                    'Серия
-                    Set elem = XDoc.createElement("Серия")
-                    elem.Text = sd
-                    doc.appendChild elem
-                End If
-                
-                'Номер
-                Set elem = XDoc.createElement("Номер")
-                elem.Text = nd
-                doc.appendChild elem
-                
-                'ДатаВыдачи
-                Set elem = XDoc.createElement("ДатаВыдачи")
-                elem.Text = vd
-                doc.appendChild elem
-                
-                'НаименованиеОргана
-                Set elem = XDoc.createElement("НаименованиеОргана")
-                elem.Text = od
-                doc.appendChild elem
-    
-                If Len(kd) > 0 Then 'optional
-                    'КодПодразделения
-                    Set elem = XDoc.createElement("КодПодразделения")
-                    elem.Text = kd
-                    doc.appendChild elem
-                End If
-            
-                If Len(ed) > 0 Then 'optional
-                    'СрокДействия
-                    Set elem = XDoc.createElement("СрокДействия")
-                    elem.Text = ed
-                    doc.appendChild elem
-                End If
-            
-            '/ДокументЛичности
-            abonent.appendChild doc
-            
-            'ВидДУЛ:
+            'КодДУЛ:
             '14 Иной документ, выдаваемый уполномоченным органом (??)
             '21 Паспорт гражданина Российской Федерации
             '22.1 Паспорт гражданина Российской Федерации, удостоверяющий его личность
@@ -330,12 +289,37 @@ Public Sub CreateDlRequest()
             '37 Удостоверение беженца
             '38 Удостоверение вынужденного переселенца
             '999 Иной документ
-            doc.setAttribute "ВидДУЛ", id
-            If id = "14" Then doc.setAttribute "НаименованиеДУЛ", td 'TODO?? 999
-    
-            If Len(id2) + Len(sd2) + Len(nd2) + Len(vd2) + Len(od2) > 0 Then 'optional
+            doc.SetAttribute "КодДУЛ", id
+            
+                If Len(sd) > 0 Then 'optional
+                    'Серия
+                    Set elem = XDoc.createElement("Серия")
+                    elem.Text = sd
+                    doc.appendChild elem
+                End If
+                
+                'Номер
+                Set elem = XDoc.createElement("Номер")
+                elem.Text = nd
+                doc.appendChild elem
+                
+                'ДатаВыдачи
+                Set elem = XDoc.createElement("ДатаВыдачи")
+                elem.Text = vd
+                doc.appendChild elem
+            
+                'Гражданство
+                Set elem = XDoc.createElement("Гражданство")
+                elem.Text = "643" 'TODO
+                doc.appendChild elem
+            
+            '/ДокументЛичности
+            abonent.appendChild doc
+            
+            If Len(id2) + Len(sd2) + Len(nd2) + Len(vd2) > 0 Then 'optional
                 'ДокументЛичности предыдущие
                 Set doc = XDoc.createElement("ДокументЛичности")
+                doc.SetAttribute "КодДУЛ", id2
                 
                     If Len(sd2) > 0 Then 'optional
                         'Серия
@@ -353,30 +337,9 @@ Public Sub CreateDlRequest()
                     Set elem = XDoc.createElement("ДатаВыдачи")
                     elem.Text = vd2
                     doc.appendChild elem
-                    
-                    'НаименованиеОргана
-                    Set elem = XDoc.createElement("НаименованиеОргана")
-                    elem.Text = od2
-                    doc.appendChild elem
-    
-                    If Len(kd2) > 0 Then 'optional
-                        'КодПодразделения
-                        Set elem = XDoc.createElement("КодПодразделения")
-                        elem.Text = kd2
-                        doc.appendChild elem
-                    End If
-        
-                    If Len(ed2) > 0 Then 'optional
-                        'СрокДействия
-                        Set elem = XDoc.createElement("СрокДействия")
-                        elem.Text = ed2
-                        doc.appendChild elem
-                    End If
                 
                 '/ДокументЛичности предыдущие
                 abonent.appendChild doc
-                doc.setAttribute "ВидДУЛ", id2
-                If id2 = "14" Then doc.setAttribute "НаименованиеДУЛ", td2 'TODO?? 999
             End If
     
             If Len(inn2) > 0 Then 'optional
@@ -398,6 +361,33 @@ Public Sub CreateDlRequest()
     
         'Согласие
         Set doc = XDoc.createElement("Согласие")
+        doc.SetAttribute "ДатаВыдачи", ds
+        
+        'СрокДействия:
+        '1 Согласие действительно в течение шести месяцев со дня его оформления
+        '2 Согласие действительно в течение года со дня его оформления
+        '3 В течение срока действия согласия с субъектом кредитной истории были
+        'заключены договор займа (кредита), договор лизинга, договор залога, договор
+        'поручительства, выдана независимая гарантия
+        doc.SetAttribute "СрокДействия", ss
+        
+        'Основание передачи в случае отличия сведений о пользователе
+        'кредитной истории, запрашивающем сведения о среднемесячных платежах Субъекта,
+        'от сведений в блоке «Выдано» кодом основания передачи согласия:
+        '1 Согласие Субъекта передано правопреемнику по заключенному договору
+        'займа (кредита) или иному договору, информация об обязательствах по
+        'которым передается в БКИ
+        '2 Согласие Субъекта передано кредитной организации, осуществляющей
+        'обслуживание денежных требований по договору займа (кредита),
+        'уступленных специализированному финансовому обществу или ипотечному
+        'агенту
+        'doc.setAttribute "ОснованиеПередачи", os 'TODO??
+        
+        'Подтверждение ознакомления абонента с ответственностью за незаконные
+        'действия по получению и (или) распространению информации, составляющей кредитную
+        'историю, незаконное получение кредитного отчета, предусмотренной статьями 5.53 и 14.29
+        'Кодекса Российской Федерации об административных правонарушениях
+        doc.SetAttribute "ОбОтветственностиПредупрежден", "1" 'const
         
             'Выдано
             Set src = XDoc.createElement("Выдано")
@@ -465,16 +455,16 @@ Public Sub CreateDlRequest()
             For i = LBound(A) To UBound(A)
                 Set elem = XDoc.createElement("Цель")
                 doc.appendChild elem
-                elem.setAttribute "КодЦели", A(i)
+                elem.SetAttribute "КодЦели", A(i)
                 
-                If A(i) = "99" Then elem.setAttribute "Описание", ocs
+                If A(i) = "99" Then elem.SetAttribute "Описание", ocs
             Next
         
             'Договор
             If ss = "3" Then 'СрокДействия = 3
                 Set elem = XDoc.createElement("Договор")
                 doc.appendChild elem
-                elem.setAttribute "Дата", dog
+                elem.SetAttribute "Дата", dog
             End If
         
             'ХэшКод для согласия Субъекта, предусмотренный
@@ -489,52 +479,28 @@ Public Sub CreateDlRequest()
         
         '/Согласие
         request.appendChild doc
-        doc.setAttribute "ДатаВыдачи", ds
-        
-        'СрокДействия:
-        '1 Согласие действительно в течение шести месяцев со дня его оформления
-        '2 Согласие действительно в течение года со дня его оформления
-        '3 В течение срока действия согласия с субъектом кредитной истории были
-        'заключены договор займа (кредита), договор лизинга, договор залога, договор
-        'поручительства, выдана независимая гарантия
-        doc.setAttribute "СрокДействия", ss
-        
-        'Основание передачи в случае отличия сведений о пользователе
-        'кредитной истории, запрашивающем сведения о среднемесячных платежах Субъекта,
-        'от сведений в блоке «Выдано» кодом основания передачи согласия:
-        '1 Согласие Субъекта передано правопреемнику по заключенному договору
-        'займа (кредита) или иному договору, информация об обязательствах по
-        'которым передается в БКИ
-        '2 Согласие Субъекта передано кредитной организации, осуществляющей
-        'обслуживание денежных требований по договору займа (кредита),
-        'уступленных специализированному финансовому обществу или ипотечному
-        'агенту
-        'doc.setAttribute "ОснованиеПередачи", os 'TODO??
-        
-        'Подтверждение ознакомления абонента с ответственностью за незаконные
-        'действия по получению и (или) распространению информации, составляющей кредитную
-        'историю, незаконное получение кредитного отчета, предусмотренной статьями 5.53 и 14.29
-        'Кодекса Российской Федерации об административных правонарушениях
-        doc.setAttribute "ОбОтветственностиПредупрежден", "1" 'const
     
         'Цель запроса
         Set elem = XDoc.createElement("Цель")
         request.appendChild elem
-        elem.setAttribute "КодЦели", cz
-        If cz = "99" Then elem.setAttribute "Описание", ocz
+        elem.SetAttribute "КодЦели", cz
+        If cz = "99" Then elem.SetAttribute "Описание", ocz
         
         If Len(sz) > 0 Then
             'СуммаОбязательства
             Set elem = XDoc.createElement("СуммаОбязательства")
             elem.Text = sz
             request.appendChild elem
-            elem.setAttribute "Валюта", vz
+            elem.SetAttribute "Валюта", vz
         End If
         
     '/Запрос
     root.appendChild request
-    request.setAttribute "Дата", dz
+    request.SetAttribute "Дата", dz
     
     '/ЗапросСведенийОПлатежах
-    XDoc.Save "C:\TEMP\Request." & dz & "." & iz & ".xml"
+    Dim file As String: file = "C:\TEMP\Request." & dz & "." & iz & ".xml"
+    XDoc.Save file
+    
+    MsgBox "Запрос сохранен в файл " & file, , ActiveWorkbook.Name
 End Sub

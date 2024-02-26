@@ -6,11 +6,11 @@
     },
     "dlrequest": {
       "commandName": "Project",
-      "commandLineArgs": "dlrequest\r\nrequest.xml.sig\r\ndlrequest.result"
+      "commandLineArgs": "dlrequest\r\nrequest.xml\r\ndlrequest.result"
     },
     "dlanswer": {
       "commandName": "Project",
-      "commandLineArgs": "dlanswer\r\n6c80c1c8-f620-491c-994a-6886706d85dc\r\ndlanswer.result"
+      "commandLineArgs": "dlanswer\r\ne700e32f-ce85-4f0a-9cee-31b8bc14a7a0\r\ndlanswer.result"
     },
     "dlputanswer": {
       "commandName": "Project",
