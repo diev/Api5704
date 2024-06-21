@@ -1,8 +1,15 @@
 Attribute VB_Name = "RequestModule"
 Option Explicit
 
-'Версия запроса API: 1.2
-'Редакция: 2024-02-26
+'Редакция: 2024-06-21
+
+'Версия запроса API
+Const CURR_API As String = "1.2"
+Const NEXT_API As String = "1.3"
+Const NEXT_DATE As Date = #7/10/2024# 'M/DD/YYYY (en-us)
+
+'Папка для сохранения запросов
+Const OUTPUT_PATH As String = "C:\TEMP"
 
 'ИНН
 Const INN As String = "7831001422"
@@ -39,14 +46,6 @@ Public Sub CreateDlRequest()
     End If
     i = i + 1
 
-    'Тип
-    Dim tz As String: tz = Cells(ActiveCell.Row, i).Text
-    If Len(tz) = 0 Then
-        'tz = "2"
-        'Cells(ActiveCell.Row, i) = tz
-    End If
-    i = i + 1
-    
     'Дата
     Dim dz As String: dz = Cells(ActiveCell.Row, i).Text
     If Len(dz) = 0 Then
@@ -106,7 +105,7 @@ Public Sub CreateDlRequest()
     'ИНН
     Dim inn2 As String: inn2 = Cells(ActiveCell.Row, i).Text: i = i + 1
     'СНИЛС
-    Dim snils2 As String: snils2 = Cells(ActiveCell.Row, i).Text: i = i + 1
+    Dim snils2 As String: snils2 = SnilsFormatter(Cells(ActiveCell.Row, i).Text): i = i + 1
     
     '--Согласие--
     
@@ -124,8 +123,8 @@ Public Sub CreateDlRequest()
     Dim ocs As String: ocs = Cells(ActiveCell.Row, i).Text: i = i + 1
     'Договор если срок 3
     Dim dog As String: dog = Format(Cells(ActiveCell.Row, i), "yyyy-MM-dd"): i = i + 1
-    'ХэшКод
-    Dim hash As String: hash = Cells(ActiveCell.Row, i).Text: i = i + 1 'TODO?? Как его вычислять? Нигде не указано!
+    'ХэшКод: "C:\Program Files (x86)\Crypto Pro\CSP\cpverify.exe" -mk -alg GR3411_2012_256 file.pdf
+    Dim hash As String: hash = HashFormatter(Cells(ActiveCell.Row, i).Text): i = i + 1
     
     '--XML--
     
@@ -136,11 +135,11 @@ Public Sub CreateDlRequest()
     'ЗапросСведенийОПлатежах
     Set root = XDoc.createElement("ЗапросСведенийОПлатежах")
     XDoc.appendChild root
-    root.SetAttribute "Версия", "1.2" 'const
+    root.SetAttribute "Версия", IIf(Now < NEXT_DATE, CURR_API, NEXT_API)
     root.SetAttribute "ИдентификаторЗапроса", iz
-    '1 – абонент запрашивает сведения только у запрашиваемого КБКИ;
-    '2 – абонент запрашивает сведения всех КБКИ путем обращения в одно КБКИ (режим «одно окно»).
-    root.SetAttribute "ТипЗапроса", tz
+    '1 – абонент запрашивает сведения только у запрашиваемого БКИ (до 01.07.2024);
+    '2 – абонент запрашивает сведения всех БКИ путем обращения в одно КБКИ (режим «одно окно»).
+    root.SetAttribute "ТипЗапроса", "2"
     
     'Абонент
     Set abonent = XDoc.createElement("Абонент")
@@ -499,8 +498,26 @@ Public Sub CreateDlRequest()
     request.SetAttribute "Дата", dz
     
     '/ЗапросСведенийОПлатежах
-    Dim file As String: file = "C:\TEMP\Request." & dz & "." & iz & ".xml"
+    Dim file As String: file = OUTPUT_PATH & "\Request." & dz & "." & iz & ".xml"
     XDoc.Save file
     
     MsgBox "Запрос сохранен в файл " & file, , ActiveWorkbook.Name
+End Sub
+
+Public Function SnilsFormatter(s As String) As String
+    s = Replace(s, " ", "")
+    s = Replace(s, "-", "")
+    SnilsFormatter = Left(s, 3) & "-" & Mid(s, 4, 3) & "-" & Mid(s, 7, 3) & " " & Right(s, 2)
+End Function
+
+Public Function HashFormatter(s As String) As String
+    HashFormatter = LCase(s)
+End Function
+
+Public Sub SnilsFormat()
+    ActiveCell.Value = SnilsFormatter(ActiveCell.Text)
+End Sub
+
+Public Sub HashFormat()
+    ActiveCell.Value = HashFormatter(ActiveCell.Text)
 End Sub

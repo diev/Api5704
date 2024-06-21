@@ -6,12 +6,23 @@
     <RootNamespace>Api5704</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>8.2024.226.0</Version>
+    <Version>8.2024.621.0</Version>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
     <Description>Предоставление ССП при обращении пользователя к НБКИ как КБКИ-контрагенту в режиме «одного окна» по Указанию Банка России № 5704-У.</Description>
     <NeutralLanguage>ru-RU</NeutralLanguage>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Diev</Authors>
+    <PackageProjectUrl>https://github.com/diev/Api5704</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/diev/Api5704.git</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' and '$(ConfigurationName)' == 'Release'">

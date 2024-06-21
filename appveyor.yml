@@ -1,0 +1,79 @@
+version: '{build}'
+image: Visual Studio 2022
+configuration: Release
+init:
+- cmd: >-
+    tzutil /s "Russian Standard Time"
+
+    git config --global core.autocrlf input
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  version_prefix: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+install:
+- ps: >-
+    [XML]$xml = Get-Content "$env:APPVEYOR_PROJECT_NAME\$env:APPVEYOR_PROJECT_NAME.csproj"
+
+    $env:VERSION = $xml.Project.PropertyGroup.Version
+
+    Update-AppveyorBuild -Version ("{0}.{1}" -f $env:VERSION, $env:APPVEYOR_BUILD_NUMBER)
+
+    $CommitDateTime = [datetime]::Parse($env:APPVEYOR_REPO_COMMIT_TIMESTAMP)
+
+    $env:BuildDate = $CommitDateTime.ToString('yyyy-MM-dd')
+
+    $env:Site = "http://{0}.github.io/{1}" -f $env:APPVEYOR_ACCOUNT_NAME, $env:APPVEYOR_PROJECT_NAME
+
+    Write-Host "Building v$env:APPVEYOR_BUILD_VERSION dated $env:BuildDate"
+build_script:
+- cmd: >-
+    dotnet publish -c Release -o Package
+
+    cd Package
+
+    echo %SITE%>>readme.txt
+
+    echo [InternetShortcut]>readme.url
+
+    echo URL=%SITE%>>readme.url
+
+    echo %APPVEYOR_PROJECT_NAME%.exe>>Package
+
+    echo %APPVEYOR_PROJECT_NAME%.exe.config>>Package
+
+    echo %APPVEYOR_PROJECT_NAME% v%APPVEYOR_BUILD_VERSION% (%BUILDDATE%)>readme.txt
+
+    echo http://%APPVEYOR_ACCOUNT_NAME%.github.io/%APPVEYOR_PROJECT_NAME%>>readme.txt
+
+    7z a ..\%APPVEYOR_PROJECT_NAME%-v%APPVEYOR_BUILD_VERSION%.zip
+
+    cd ..
+artifacts:
+- path: $(appveyor_project_name)-v$(appveyor_build_version).zip
+  name: AppZip
+deploy:
+- provider: GitHub
+  tag: v$(appveyor_build_version)
+  release: $(appveyor_project_name) v$(appveyor_build_version)
+  description: '* $(appveyor_repo_commit_message)\n\nBuild #$(appveyor_build_number) by AppVeyor $(BuildDate)\nSee docs on $(Site)'
+  auth_token:
+    secure: Oyf/ccEamPwfWLPEZQlf9hPfhGGXu3Kqnmt9saeaTMH2OE6OR0tAt2JkDl/FRR9o
+  artifact: AppZip
+  draft: false
+  prerelease: true
+  force_update: true
+  on:
+    branch: main
+only_commits:
+  files:
+    - '*.cs'
+    - '*.yml'
+skip_commits:
+  files:
+    - docs\*
+    - '**\*.md'

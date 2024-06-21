@@ -1,6 +1,6 @@
 ﻿#region License
 /*
-Copyright 2022-2023 Dmitrii Evdokimov
+Copyright 2022-2024 Dmitrii Evdokimov
 Open source software
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,7 +87,7 @@ internal static class Api
             _ => "недокументированный ответ.",
         };
 
-        Console.WriteLine($"{result} - {o}");
+        Console.WriteLine($"Ответ {result} - {o}");
 
         Environment.Exit(result);
     }
@@ -126,6 +126,14 @@ internal static class Api
 
         ByteArrayContent content = new(File.ReadAllBytes(file));
         using HttpResponseMessage response = await _client.PostAsync(cmd, content);
+
+        if ((int)response.StatusCode == 495)
+        {
+            Console.WriteLine("495 - сервер не признает наш сертификат.");
+
+            Environment.Exit(495);
+        }
+
         int result = await WriteResultFileAsync(resultFile, response);
 
         string o = result switch
@@ -136,7 +144,7 @@ internal static class Api
             _ => "недокументированный ответ.",
         };
 
-        Console.WriteLine($"{result} - {o}");
+        Console.WriteLine($"Ответ {result} - {o}");
 
         Environment.Exit(result);
     }
@@ -182,7 +190,7 @@ internal static class Api
             _ => "недокументированный ответ.",
         };
 
-        Console.WriteLine($"{result} - {o}");
+        Console.WriteLine($"Ответ {result} - {o}");
 
         Environment.Exit(result);
     }

@@ -29,15 +29,13 @@ rem Date yyyy-mm-dd
 set Ymd=%date:~-4%-%date:~3,2%-%date:~0,2%
 
 rem Test build folder
-set Test=$$
+set Test=$
 
-rem Add extra projects to pack their sources/binaries here
-set AddSrcDirNames=
-set AddBinDirNames=
+rem Add extra projects to pack their sources here
+set AddDirNames=
 
 echo === Pack sources ===
 
-rem set SrcPack=%ProjectName%-v%Version%-(%Ymd%)-src.zip
 set SrcPack=%ProjectName%-v%Version%-src.zip
 
 echo Pack sources to %SrcPack%
@@ -45,7 +43,8 @@ echo Pack sources to %SrcPack%
 pushd ..
 set Packer="C:\Program Files\7-Zip\7z.exe" a -tzip %SrcPack% -xr!bin -xr!obj
 if exist %SrcPack% del %SrcPack%
-call :pack %ProjectDirName% %AddSrcDirNames%
+%Packer% *.sln *.md LICENSE
+call :pack %ProjectDirName% %AddDirNames%
 
 echo === Test build ===
 
@@ -64,7 +63,6 @@ echo === Pack binaries ===
 
 cd Distr
 copy ..\version.txt
-rem set BinPack=%ProjectName%-v%Version%-(%Ymd%).zip
 set BinPack=%ProjectName%-v%Version%.zip
 if exist ..\..\%BinPack% del ..\..\%BinPack%
 
@@ -72,8 +70,6 @@ echo Pack binary application to %BinPack%
 
 "C:\Program Files\7-Zip\7z.exe" a -tzip ..\..\%BinPack%
 cd ..\..
-
-if not /%AddBinDirNames%/ == // "C:\Program Files\7-Zip\7z.exe" a -tzip %BinPack% %AddBinDirNames%
 
 echo === Backup ===
 
@@ -95,7 +91,7 @@ if '%1' == '' goto :eof
 
 echo === Pack %1 ===
 
-%Packer% -r %1\*.cs %1\*.resx %1\*.bas %1\*.xlsm
+%Packer% -r %1\*.cs %1\*.resx
 %Packer% %1\*.csproj %1\*.json %1\*.cmd
 shift
 goto pack
@@ -107,14 +103,32 @@ del %Temp%\%2
 goto :eof
 
 :build_cmd
-echo dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr
+echo rem Build an app with many dlls
+echo rem dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr
+echo.
+echo rem Build a single-file app when NET Desktop runtime required 
+echo dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr -r win-x64 -p:PublishSingleFile=true --self-contained false
+echo.
+echo rem Build a single-file app when no runtime required
+echo rem dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr -r win-x64 -p:PublishSingleFile=true
 goto :eof
 
 :version_txt
 call :lower RepoLName %RepoName%
-echo %ProjectName% v%Version% (%Ymd%)
+echo %ProjectName%
+echo %Description%
 echo.
+echo Version: v%Version%
+echo Date:    %Ymd%
+echo.
+echo Requires SDK .NET 8.0 to build
+echo Requires .NET Desktop Runtime 8.0 to run
+echo Download from https://dotnet.microsoft.com/download
+echo.
+echo Open source code, Issues, Releases:
 echo https://github.com/diev/%RepoName%
+echo Mirrors:
+echo https://gitverse.ru/diev/%RepoName%
 echo https://gitflic.ru/project/diev/%RepoLName%
 goto :eof
 

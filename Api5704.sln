@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api5704-net8", "Api5704-net8\Api5704-net8.csproj", "{1C674DBA-1F4E-4974-8A54-B489C66BE5E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api5704", "Api5704\Api5704.csproj", "{1C674DBA-1F4E-4974-8A54-B489C66BE5E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
