@@ -19,11 +19,11 @@ install:
 - ps: >-
     [XML]$xml = Get-Content "$env:APPVEYOR_PROJECT_NAME\$env:APPVEYOR_PROJECT_NAME.csproj"
 
-    $version = $xml.Project.PropertyGroup.Version.Trim()
+    $version = $xml.Project.PropertyGroup.Version
 
-    $build = $env:APPVEYOR_BUILD_NUMBER.Trim()
+    $build = $env:APPVEYOR_BUILD_NUMBER
 
-    Update-AppveyorBuild -Version "$version.$build"
+    Update-AppveyorBuild -Version "$version-$build"
 
     $CommitDateTime = [datetime]::Parse($env:APPVEYOR_REPO_COMMIT_TIMESTAMP)
 
