@@ -28,9 +28,13 @@ install:
     Write-Host "Building v$env:APPVEYOR_BUILD_VERSION dated $env:BuildDate"
 build_script:
 - cmd: >-
+    cd %APPVEYOR_PROJECT_NAME%
+
     PostBuild %APPVEYOR_PROJECT_NAME%.proj
+
+    cd ..
 artifacts:
-- path: ..\$(appveyor_project_name)-v$(appveyor_build_version).zip
+- path: $(appveyor_project_name)-v$(appveyor_build_version).zip
   name: AppZip
 deploy:
 - provider: GitHub
