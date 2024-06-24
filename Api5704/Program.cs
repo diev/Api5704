@@ -17,15 +17,24 @@ limitations under the License.
 */
 #endregion
 
+using System.Text.Json;
+
 using static Api5704.Api;
 
 namespace Api5704;
 
 internal class Program
 {
+    public static Config Config { get; private set; } = new();
+
     static async Task Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        Console.WriteLine("Hello, World!"); // :)
+
+        if (!TryGetConfig())
+        {
+            Environment.Exit(2);
+        }
 
         if (args.Length == 0) Usage();
         string cmd = args[0].ToLower();
@@ -76,26 +85,60 @@ internal class Program
     {
         string usage = @"
 Предоставление сведений о среднемесячных платежах субъектов кредитных историй:
-  Api5704-net8 запрос параметры
+    Api5704 запрос параметры
+
+Запросы:
 
 dlput – передача от БКИ данных, необходимых для формирования и предоставления
-  пользователям кредитных историй сведений о среднемесячных платежах Субъекта.
+    пользователям кредитных историй сведений о среднемесячных платежах Субъекта.
 dlrequest – запрос сведений о среднемесячных платежах Субъекта.
-  Параметры запроса – request file, result file
+ 
+    Параметры: request.xml result.xml
 
 dlanswer – получение сведений о среднемесячных платежах Субъекта по
-  идентификатору ответа.
+    идентификатору ответа.
 dlputanswer – получение информации о результатах загрузки данных, необходимых
-  для формирования и предоставления пользователям кредитных историй сведений
-  о среднемесячных платежах Субъекта, в базу данных КБКИ.
-  Параметры запроса – id, result file
+    для формирования и предоставления пользователям кредитных историй сведений
+    о среднемесячных платежах Субъекта, в базу данных КБКИ.
+
+    Параметры: id answer.xml
+               result.xml answer.xml
 
 certadd – добавление нового сертификата абонента.
 certrevoke – отзыв сертификата абонента.
-  Параметры запроса – id, cert file, sign file, result file";
+
+    Параметры: id cert.cer sign.sig result.xml";
 
         Console.WriteLine(usage);
 
         Environment.Exit(1);
+    }
+
+    private static JsonSerializerOptions GetJsonOptions()
+    {
+        return new()
+        {
+            WriteIndented = true
+        };
+    }
+
+    private static bool TryGetConfig()
+    {
+        string appsettings = Path.ChangeExtension(Environment.ProcessPath!, ".config.json");
+
+        if (File.Exists(appsettings))
+        {
+            using var stream = File.OpenRead(appsettings);
+            Config = JsonSerializer.Deserialize<Config>(stream)!;
+            return true;
+        }
+        else
+        {
+            using var stream = File.OpenWrite(appsettings);
+            JsonSerializer.Serialize(stream, Config, GetJsonOptions());
+
+            Console.WriteLine($"Создан новый файл настроек '{appsettings}' - откорректируйте его.");
+            return false;
+        }
     }
 }

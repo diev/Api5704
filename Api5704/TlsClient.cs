@@ -30,60 +30,7 @@ namespace Api5704;
 internal class TlsClient : HttpClient
 {
     private static readonly HttpClientHandler _handler;
-
-    /// <summary>
-    /// Отпечаток собственного сертификата клиента.
-    /// </summary>
-    private static string MyThumbprint
-        => ConfigReader.GetString(nameof(MyThumbprint));
-    
-    /// <summary>
-    /// Отпечаток сертификата сервера.
-    /// </summary>
-    private static string ServerThumbprint
-        => ConfigReader.GetString(nameof(ServerThumbprint));
-
-    /// <summary>
-    /// Base Uri для направления запросов серверу.
-    /// </summary>
-    private static string ServerAddress
-        => ConfigReader.GetString(nameof(ServerAddress));
-    
-    /// <summary>
-    /// Использовать ли прокси.
-    /// </summary>
-    private static bool UseProxy
-        => ConfigReader.GetBool(nameof(UseProxy));
-
-    /// <summary>
-    /// Строка настройки прокси вида http://proxy:port
-    /// </summary>
-    private static string ProxyAddress
-        => ConfigReader.GetString(nameof(ProxyAddress));
-    
-    /// <summary>
-    /// Проверять ли сертификат сервера на ошибки протокола TLS (не годится для self-signed).
-    /// </summary>
-    private static bool ValidateTls
-        => ConfigReader.GetBool(nameof(ValidateTls));
-
-    /// <summary>
-    /// Проверять ли сертификат сервера по отпечатку (возможность для self-signed).
-    /// </summary>
-    private static bool ValidateThumbprint
-        => ConfigReader.GetBool(nameof(ValidateThumbprint));
-
-    /// <summary>
-    /// Отображать ли информацию о сертификате клиента.
-    /// </summary>
-    private static bool VerboseClient
-        => ConfigReader.GetBool(nameof(VerboseClient));
-
-    /// <summary>
-    /// Отображать ли информацию о сертификате сервера.
-    /// </summary>
-    private static bool VerboseServer
-        => ConfigReader.GetBool(nameof(VerboseServer));
+    private static readonly Config _config = Program.Config;
 
     static TlsClient()
     {
@@ -96,21 +43,21 @@ internal class TlsClient : HttpClient
             SslProtocols = SslProtocols.Tls12
         };
 
-        string thumbprint = X509.GetThumbprint(MyThumbprint);
+        string thumbprint = X509.GetThumbprint(_config.MyThumbprint);
         X509Certificate2 certificate = X509.GetMyCertificate(thumbprint);
         _handler.ClientCertificates.Add(certificate);
 
-        if (VerboseClient)
+        if (_config.VerboseClient)
         {
             Console.WriteLine("--- Client ---");
             Console.WriteLine(X509.CertificateText(certificate));
         }
 
-        if (UseProxy)
+        if (_config.UseProxy)
         {
             // DefaultProxyCredentials = null;
             _handler.UseProxy = true;
-            _handler.Proxy = new WebProxy(ProxyAddress);
+            _handler.Proxy = new WebProxy(_config.ProxyAddress);
         }
     }
 
@@ -119,7 +66,7 @@ internal class TlsClient : HttpClient
     /// </summary>
     public TlsClient() : base(_handler)
     {
-        BaseAddress = new Uri(ServerAddress);
+        BaseAddress = new Uri(_config.ServerAddress);
     }
 
     /// <summary>
@@ -132,7 +79,8 @@ internal class TlsClient : HttpClient
     }
 
     /// <summary>
-    /// Callback функция, вызываемая для самостоятельной проверки сертификата сервера при подключении к нему.
+    /// Callback функция, вызываемая для самостоятельной проверки сертификата сервера
+    /// при подключении к нему.
     /// </summary>
     /// <param name="requestMessage">Запрос к серверу.</param>
     /// <param name="certificate">Сертификат сервера.</param>
@@ -142,7 +90,7 @@ internal class TlsClient : HttpClient
     private static bool ServerCertificateValidation(HttpRequestMessage requestMessage,
         X509Certificate2? certificate, X509Chain? chain, SslPolicyErrors sslErrors)
     {
-        if (VerboseServer)
+        if (_config.VerboseServer)
         {
             Console.WriteLine("--- Server ---");
             // It is possible to inspect the certificate provided by the server.
@@ -150,14 +98,16 @@ internal class TlsClient : HttpClient
 
             Console.Write(X509.CertificateText(certificate));
 
-            // Based on the custom logic it is possible to decide whether the client considers certificate valid or not
+            // Based on the custom logic it is possible to decide
+            // whether the client considers certificate valid or not
             Console.WriteLine($"Tls errors: {sslErrors}");
         }
 
-        if (ValidateTls && sslErrors != SslPolicyErrors.None)
+        if (_config.ValidateTls && sslErrors != SslPolicyErrors.None)
             return false;
 
-        if (ValidateThumbprint && certificate?.GetCertHashString() != X509.GetThumbprint(ServerThumbprint))
+        if (_config.ValidateThumbprint && !string.IsNullOrEmpty(_config.ServerThumbprint) &&
+            certificate?.GetCertHashString() != X509.GetThumbprint(_config.ServerThumbprint))
             return false;
 
         return true;

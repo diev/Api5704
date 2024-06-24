@@ -27,6 +27,10 @@
     "certrevoke": {
       "commandName": "Project",
       "commandLineArgs": "certrevoke\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertrevoke.result"
+    },
+    "dlanswer file": {
+      "commandName": "Project",
+      "commandLineArgs": "dlanswer\r\nresult.xml\r\ndlanswer.result"
     }
   }
 }

@@ -26,8 +26,6 @@ namespace Api5704;
 /// </summary>
 internal static class PKCS7
 {
-    private static string CspTest => ConfigReader.GetString(nameof(CspTest));
-
     /// <summary>
     /// Извлечь из PKCS#7 с ЭП чистый исходный текст.
     /// Криптопровайдер и проверка ЭП здесь не используются - только извлечение блока данных из формата ASN.1
@@ -50,14 +48,17 @@ internal static class PKCS7
     /// <exception cref="FileNotFoundException"></exception>
     public static async Task SignFileAsync(string file, string resultFile)
     {
+        var config = Program.Config;
+
         // "C:\Program Files\Crypto Pro\CSP\csptest.exe"
         // -sfsign -sign -in %1 -out %2 -my %3 [-password %4] -add -addsigtime
 
-        string cmdline = ConfigReader.GetString(nameof(CspTest) + "SignFile")
+        string cmdline = config.CspTestSignFile
             .Replace("%1", file)
-            .Replace("%2", resultFile);
+            .Replace("%2", resultFile)
+            .Replace("%3", config.MyThumbprint);
 
-        await Exec.StartAsync(CspTest, cmdline);
+        await Exec.StartAsync(config.CspTest, cmdline);
 
         if (!File.Exists(resultFile))
         {

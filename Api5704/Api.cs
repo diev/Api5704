@@ -17,14 +17,14 @@ limitations under the License.
 */
 #endregion
 
+using System.Xml;
+
 namespace Api5704;
 
 internal static class Api
 {
     private static readonly TlsClient _client = new();
-
-    private static bool SignFile => ConfigReader.GetBool(nameof(SignFile));
-    private static bool CleanSign => ConfigReader.GetBool(nameof(CleanSign));
+    private static readonly Config _config = Program.Config;
 
     #region public
 
@@ -64,7 +64,7 @@ internal static class Api
             throw new FileNotFoundException("Sign file not found.", sign);
         }
 
-        if (SignFile && Path.GetExtension(sign) != ".sig")
+        if (_config.SignFile && Path.GetExtension(sign) != ".sig")
         {
             await PKCS7.SignFileAsync(sign, sign + ".sig");
             sign += ".sig";
@@ -107,7 +107,8 @@ internal static class Api
     /// <returns>
     /// 200 – результат запроса содержит информацию о результатах загрузки данных в базу данных КБКИ;
     /// 202 – результат запроса содержит квитанцию с идентификатором ответа;
-    /// 400 – результат запроса содержит квитанцию с информацией об ошибке.
+    /// 400 – результат запроса содержит квитанцию с информацией об ошибке;
+    /// 495 - сервер не признает наш сертификат - доступ отказан.
     /// </returns>
     /// <exception cref="NotImplementedException"></exception>
     public static async Task PostRequestAsync(string cmd, string file, string resultFile)
@@ -117,7 +118,7 @@ internal static class Api
             throw new FileNotFoundException("File not found.", file);
         }
 
-        if (SignFile && Path.GetExtension(file) != ".sig")
+        if (_config.SignFile && Path.GetExtension(file) != ".sig")
         {
             string sign = file + ".sig";
             await PKCS7.SignFileAsync(file, sign);
@@ -129,7 +130,7 @@ internal static class Api
 
         if ((int)response.StatusCode == 495)
         {
-            Console.WriteLine("495 - сервер не признает наш сертификат.");
+            Console.WriteLine("495 - сервер не признает наш сертификат - доступ отказан.");
 
             Environment.Exit(495);
         }
@@ -157,7 +158,8 @@ internal static class Api
     /// в базу данных КБКИ.
     /// </summary>
     /// <param name="cmd">Метод API ("dlanswer" или "dlputanswer").</param>
-    /// <param name="id">Идентификатор Guid (вида A6563526-A3F3-4D4E-A923-E41E93F1D921).</param>
+    /// <param name="id">Идентификатор Guid (вида A6563526-A3F3-4D4E-A923-E41E93F1D921)
+    /// или файл результата отправки запроса, где его можно взять.</param>
     /// <param name="resultFile">Имя файла для ответной квитанции.
     /// Если в конфиге CleanSign: true, то будут очищенный файл и файл.sig в исходном формате PKCS#7.</param>
     /// <returns>
@@ -165,11 +167,26 @@ internal static class Api
     /// 202 – результат запроса содержит квитанцию с информацией об ошибке «Ответ не готов»;
     /// 400 – результат запроса содержит квитанцию с информацией об ошибке, кроме ошибки «Ответ не готов».
     /// В случае получения ошибки «Ответ не готов» клиент должен повторить запрос не ранее, чем через 1 секунду.
+    /// 404 - неправильный идентификатор.
     /// </returns>
     public static async Task GetAnswerAsync(string cmd, string id, string resultFile)
     {
         int result = 500;
         int retries = 0;
+
+        if (File.Exists(id))
+        {
+            XmlDocument xml = new();
+            xml.Load(id);
+            id = xml.DocumentElement!.FirstChild!.InnerText;
+        }
+
+        if (id.Length != 36) // check Guid
+        {
+            Console.WriteLine($"Неправильный id - '{id}'.");
+
+            Environment.Exit(404);
+        }
 
         while (++retries <= 10)
         { 
@@ -222,7 +239,7 @@ internal static class Api
         Console.WriteLine($"Status code: {result} {response.StatusCode}");
         byte[] data = await response.Content.ReadAsByteArrayAsync();
 
-        if (CleanSign)
+        if (_config.CleanSign)
         {
             await File.WriteAllBytesAsync(file + ".sig", data);
             data = PKCS7.CleanSign(data);
