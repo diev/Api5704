@@ -78,6 +78,9 @@ if exist ..\..\..\..\%BinPack% del ..\..\..\..\%BinPack%
 "C:\Program Files\7-Zip\7z.exe" a -tzip ..\..\..\..\%BinPack%
 cd ..\..\..\..
 
+rem Pack files and folders at the solution level
+"C:\Program Files\7-Zip\7z.exe" a %BinPack% Templates XLSM
+
 echo === Backup ===
 
 set Store=G:\BankApps\AppStore

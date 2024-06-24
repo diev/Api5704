@@ -32,8 +32,6 @@ build_script:
 artifacts:
 - path: ..\$(appveyor_project_name)-v$(appveyor_build_version).zip
   name: AppZip
-- path: ..\$(appveyor_project_name)-v$(appveyor_build_version)-src.zip
-  name: SrcZip
 deploy:
 - provider: GitHub
   tag: v$(appveyor_build_version)
@@ -41,9 +39,7 @@ deploy:
   description: '* $(appveyor_repo_commit_message)\n\nBuild #$(appveyor_build_number) by AppVeyor $(BuildDate)'
   auth_token:
     secure: Oyf/ccEamPwfWLPEZQlf9hPfhGGXu3Kqnmt9saeaTMH2OE6OR0tAt2JkDl/FRR9o
-  artifact:
-  - AppZip
-  - SrcZip
+  artifact: AppZip
   draft: false
   prerelease: true
   force_update: true
