@@ -23,7 +23,7 @@ install:
 
     $build = $env:APPVEYOR_BUILD_NUMBER
 
-    Update-AppveyorBuild -Version "$version-$build"
+    Update-AppveyorBuild -Version "$($version.Trim()).$build"
 
     $CommitDateTime = [datetime]::Parse($env:APPVEYOR_REPO_COMMIT_TIMESTAMP)
 
