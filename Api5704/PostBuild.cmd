@@ -1,4 +1,5 @@
 @echo off
+rem version 2024-06-24
 rem Add this section to .csproj:
 
 rem <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' and '$(ConfigurationName)' == 'Release'">
@@ -6,6 +7,7 @@ rem   <Exec Command="call PostBuild.cmd $(ProjectPath)"/>
 rem </Target>
 
 setlocal
+chcp 65001
 rem $(ProjectPath)
 if '%1' == '' exit /b 0
 rem C:\Repos\Repo\src\project.csproj
@@ -31,20 +33,23 @@ set Ymd=%date:~-4%-%date:~3,2%-%date:~0,2%
 rem Test build folder
 set Test=$
 
-rem Add extra projects to pack their sources here
-set AddDirNames=
-
 echo === Pack sources ===
 
 set SrcPack=%ProjectName%-v%Version%-src.zip
 
 echo Pack sources to %SrcPack%
 
+rem Go to the solution level
 pushd ..
+
 set Packer="C:\Program Files\7-Zip\7z.exe" a -tzip %SrcPack% -xr!bin -xr!obj
 if exist %SrcPack% del %SrcPack%
-%Packer% *.sln *.md LICENSE
-call :pack %ProjectDirName% %AddDirNames%
+
+rem Pack files and folders at the solution level
+%Packer% *.sln *.md LICENSE Templates XLSM
+
+rem Pack sources in folders at the solution level
+call :pack %ProjectDirName%
 
 echo === Test build ===
 
@@ -61,15 +66,16 @@ call build.cmd
 
 echo === Pack binaries ===
 
-cd Distr
-copy ..\version.txt
 set BinPack=%ProjectName%-v%Version%.zip
-if exist ..\..\%BinPack% del ..\..\%BinPack%
+
+cd %ProjectDirName%\bin\Distr
+copy ..\..\..\version.txt
 
 echo Pack binary application to %BinPack%
 
-"C:\Program Files\7-Zip\7z.exe" a -tzip ..\..\%BinPack%
-cd ..\..
+if exist ..\..\..\..\%BinPack% del ..\..\..\..\%BinPack%
+"C:\Program Files\7-Zip\7z.exe" a -tzip ..\..\..\..\%BinPack%
+cd ..\..\..\..
 
 echo === Backup ===
 
@@ -104,13 +110,13 @@ goto :eof
 
 :build_cmd
 echo rem Build an app with many dlls
-echo rem dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr
+echo rem dotnet publish %ProjectDirName%\%ProjectFileName% -o %ProjectDirName%\bin\Distr
 echo.
 echo rem Build a single-file app when NET Desktop runtime required 
-echo dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr -r win-x64 -p:PublishSingleFile=true --self-contained false
+echo dotnet publish %ProjectDirName%\%ProjectFileName% -o %ProjectDirName%\bin\Distr -r win-x64 -p:PublishSingleFile=true --self-contained false
 echo.
 echo rem Build a single-file app when no runtime required
-echo rem dotnet publish %ProjectDirName%\%ProjectFileName% -o Distr -r win-x64 -p:PublishSingleFile=true
+echo rem dotnet publish %ProjectDirName%\%ProjectFileName% -o %ProjectDirName%\bin\Distr -r win-x64 -p:PublishSingleFile=true
 goto :eof
 
 :version_txt

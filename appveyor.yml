@@ -21,6 +21,8 @@ install:
 
     $env:VERSION = $xml.Project.PropertyGroup.Version
 
+    Write-Host "Version v$env:VERSION"
+
     Update-AppveyorBuild -Version ("{0}.{1}" -f $env:VERSION, $env:APPVEYOR_BUILD_NUMBER)
 
     $CommitDateTime = [datetime]::Parse($env:APPVEYOR_REPO_COMMIT_TIMESTAMP)
