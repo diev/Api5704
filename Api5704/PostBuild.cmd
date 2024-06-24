@@ -6,6 +6,7 @@ rem <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' ==
 rem   <Exec Command="call PostBuild.cmd $(ProjectPath)"/>
 rem </Target>
 
+rem if '%APPVEYOR%' == 'True' exit /b 0
 setlocal
 chcp 65001
 rem $(ProjectPath)
