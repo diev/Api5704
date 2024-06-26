@@ -1,4 +1,6 @@
 # Api5704
+[![Build status](https://ci.appveyor.com/api/projects/status/0rnoo3ra0mwyc327?svg=true)](https://ci.appveyor.com/project/diev/api5704)
+[![GitHub Release](https://img.shields.io/github/release/diev/Api5704.svg)](https://github.com/diev/Api5704/releases/latest)
 
 Передача сведений о среднемесячных платежах (ССП) по Указанию Банка
 России от 11.01.2021 № 5704-У «О порядке и форме предоставления сведений

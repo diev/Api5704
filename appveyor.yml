@@ -42,7 +42,7 @@ install:
 build_script:
 - cmd: build.cmd
 artifacts:
-- path: *.zip
+- path: '*.zip'
   name: AppZip
 deploy:
 - provider: GitHub
