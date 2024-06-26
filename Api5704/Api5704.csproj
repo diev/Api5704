@@ -6,7 +6,7 @@
     <RootNamespace>Api5704</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>8.2024.624</Version>
+    <Version>8.2024.625</Version>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
     <Description>Предоставление ССП при обращении пользователя к НБКИ как КБКИ-контрагенту в режиме «одного окна» по Указанию Банка России № 5704-У.</Description>
@@ -25,18 +25,8 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' and '$(ConfigurationName)' == 'Release'">
-    <Exec Command="call PostBuild.cmd $(ProjectPath)" />
-  </Target>
-
   <ItemGroup>
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Api5704.xlsm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
