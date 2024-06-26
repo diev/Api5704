@@ -91,23 +91,29 @@
 
     Api5704 запрос параметры
 
+Регистр командной строки неважен. Ниже запросы (команды) для
+удобства указаны в верхнем регистре, а файлы - в нижнем.
+
+Обычно программе нужен только первый файл (или guid), а последующие
+в параметрах она создает с указанными именами и полученной информацией.
+
 **dlput** – передача от КБКИ данных, необходимых для формирования
 и предоставления пользователям кредитных историй сведений о
 среднемесячных платежах Субъекта.
 
-    Api5704 dlput qcb_put.xml result.xml
+    Api5704 DLPUT qcb_put.xml result.xml
 
 **dlrequest** – запрос сведений о среднемесячных платежах Субъекта.
 Параметры: `request.xml[.sig] result.xml`
 (`result.xml` будет создан с результатом операции).
 
-    Api5704 dlrequest request.xml result.xml
+    Api5704 DLREQUEST request.xml result.xml
 
 **dlanswer** – получение сведений о среднемесячных платежах Субъекта
 по идентификатору ответа.
 
-    Api5704 dlanswer n6c80c1c8-f620-491c-994a-6886706d85dc answer.xml
-    Api5704 dlanswer result.xml answer.xml
+    Api5704 DLANSWER n6c80c1c8-f620-491c-994a-6886706d85dc answer.xml
+    Api5704 DLANSWER result.xml answer.xml
 
 **dlputanswer** – получение информации о результатах загрузки данных,
 необходимых для формирования и предоставления пользователям кредитных
@@ -115,18 +121,18 @@
 Параметры: `id answer.xml` (вместо `id` можно подставить `result.xml`
 с ним из предыдущей операции, `answer.xml` будет создан с ответом).
 
-    Api5704 dlputanswer 945cb186-0d50-45ff-8823-797942987638 answer.xml
-    Api5704 dlputanswer result.xml answer.xml
+    Api5704 DLPUTANSWER 945cb186-0d50-45ff-8823-797942987638 answer.xml
+    Api5704 DLPUTANSWER result.xml answer.xml
 
 **certadd** – добавление нового сертификата абонента.
 
-    Api5704 certadd A6563526-A3F3-4D4E-A923-E41E93F1D921 cert.cer cert.cer.sig result.xml
+    Api5704 CERTADD A6563526-A3F3-4D4E-A923-E41E93F1D921 cert.cer cert.cer.sig result.xml
 
 **certrevoke** – отзыв сертификата абонента.
 Параметры: `id cert.cer sign.sig result.xml`
 (`result.xml` будет создан с результатом операции).
 
-    Api5704 certrevoke A6563526-A3F3-4D4E-A923-E41E93F1D921 cert.cer cert.cer.sig result.xml
+    Api5704 CERTREVOKE A6563526-A3F3-4D4E-A923-E41E93F1D921 cert.cer cert.cer.sig result.xml
 
 ## Пример получения ССП в конфигурации с наложением ЭП программой
 
@@ -136,7 +142,7 @@
 `ИдентификаторЗапроса="6d20a9fd-7bce-4480-bf56-a66932876bf7"`.
 Отправить файл командой `dlrequest`:
 
-    Api5704 dlrequest request.xml result.xml
+    Api5704 DLREQUEST request.xml result.xml
 
 Посмотреть полученный (в случае успеха передачи) файл `result.xml`.
 Там будет строка вида (одной строкой) с ответом на наш запрос:
@@ -149,39 +155,44 @@
 Вот этот идентификатор ответа надо через некоторое время
 отправить командой для получения ответного файла с ССП:
 
-    Api5704 dlanswer b17c7a39-359e-4e7c-941d-668e2e957a7c answer.xml
+    Api5704 DLANSWER b17c7a39-359e-4e7c-941d-668e2e957a7c answer.xml
 
 Другой вариант проще - запустить запрос с файлом из предыдущего этапа -
 программа возьмет ИдентификаторОтвета из него сама:
 
-    Api5704 dlanswer result.xml answer.xml
+    Api5704 DLANSWER result.xml answer.xml
+
+Или еще проще - использовать расширение API (см.ниже).
 
 Полученный файл `answer.xml` содержит искомую информацию с ССП.
 
 ## Раширение API дополнительными командами
 
 Отправка запроса (`dlrequest`), получение квитанции и сведений
-(`dlanswer`) за один запуск - `auto`:
+(`dlanswer`) за один запуск - команда `auto`:
 
-    Api5704 auto request.xml result.xml answer.xml
+    Api5704 AUTO request.xml result.xml answer.xml
 
-Пакетная обработка запросов (`auto`) из папки за один запуск - `dir`:
+Пакетная обработка запросов (`auto`) из папки за один запуск -
+команда `dir`:
 
-    Api5704 dir sources requests results answers
+    Api5704 DIR sources requests results answers
 
 где:
 
 - `sources` - папка с исходными запросами `*.xml` (имена файлов любые);
 - `requests` - папка, куда будут сложены копии исходных файлов,
 переименованные по маске `yyyy-MM-dd.guid.request.xml`
-(`yyyy-MM-dd` - текущая дата, `guid` - ИдентификаторЗапроса из XML);
+  - `yyyy-MM-dd` - текущая дата,
+  - `guid` - ИдентификаторЗапроса из XML;
 - `results` - папка, куда будут сложены квитанции,
-переименованные по маске `yyyy-MM-dd.guid.result.xml`;
+переименованные по аналогичной маске `yyyy-MM-dd.guid.result.xml`;
 - `answers` - папка, куда будут сложены квитанции,
-переименованные по маске `yyyy-MM-dd.guid.answer.xml`.
+переименованные по аналогичной маске `yyyy-MM-dd.guid.answer.xml`.
 
 После получения файла в папке `answers`, соответствующий ему исходный
-файл будет считаться обработанным и удален из папки `sources`.
+файл будет считаться обработанным и удален из папки `sources`, при этом
+он всегда может быть позже найден в папке `requests` с датой и guid.
 
 ## Вычисление ХэшКода согласий
 
