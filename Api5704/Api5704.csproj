@@ -6,7 +6,7 @@
     <RootNamespace>Api5704</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>8.2024.625</Version>
+    <Version>8.2024.626</Version>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
     <Description>Предоставление ССП при обращении пользователя к НБКИ как КБКИ-контрагенту в режиме «одного окна» по Указанию Банка России № 5704-У.</Description>

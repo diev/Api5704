@@ -21,19 +21,22 @@ using System.Xml;
 
 namespace Api5704;
 
-internal static class Api
+public class Api
 {
     private static readonly TlsClient _client = new();
     private static readonly Config _config = Program.Config;
 
-    #region public
-
+    // API
     public const string certadd = nameof(certadd);
     public const string certrevoke = nameof(certrevoke);
     public const string dlanswer = nameof(dlanswer);
     public const string dlput = nameof(dlput);
     public const string dlputanswer = nameof(dlputanswer);
     public const string dlrequest = nameof(dlrequest);
+
+    // Extra
+    public const string auto = nameof(auto); // dlrequest + dlanswer
+    public const string dir = nameof(dir); // dlrequest + dlanswer
 
     /// <summary>
     /// POST
@@ -78,7 +81,7 @@ internal static class Api
         };
 
         using HttpResponseMessage response = await _client.PostAsync(cmd, content);
-        int result = await WriteResultFileAsync(resultFile, response);
+        (int result, _) = await ApiHelper.WriteResultFileAsync(resultFile, response, _config.CleanSign);
 
         string o = result switch
         {
@@ -97,21 +100,30 @@ internal static class Api
     /// dlput – передача от БКИ данных, необходимых для формирования и предоставления пользователям
     /// кредитных историй сведений о среднемесячных платежах Субъекта.
     /// dlrequest – запрос сведений о среднемесячных платежах Субъекта.
+    /// Extra
+    /// auto - запрос и получение сведений (dlrequest + dlanswer) за один запуск.
     /// </summary>
-    /// <param name="cmd">Метод API ("dlput" или "dlrequest").</param>
+    /// <param name="cmd">Метод API ("dlput" или "dlrequest") или Extra "auto".</param>
     /// <param name="file">Имя файла с запросом в кодировке utf-8.
     /// Если в конфиге SignFile: true и файл без расширения .sig, то он будет подписан ЭП в формате PKCS#7
     /// (рядом появится файл с расширением .sig, который и будет отправлен).</param>
     /// <param name="resultFile">Имя файла для ответной квитанции.
+    /// Если в конфиге CleanSign: true, то будут очищенный файл и файл.sig в исходном формате PKCS#7.</param>
+    /// <param name="answerFile">Имя файла для получения информации (Extra, только при "dlauto").
     /// Если в конфиге CleanSign: true, то будут очищенный файл и файл.sig в исходном формате PKCS#7.</param>
     /// <returns>
     /// 200 – результат запроса содержит информацию о результатах загрузки данных в базу данных КБКИ;
     /// 202 – результат запроса содержит квитанцию с идентификатором ответа;
     /// 400 – результат запроса содержит квитанцию с информацией об ошибке;
     /// 495 - сервер не признает наш сертификат - доступ отказан.
+    /// Extra (dlanswer):
+    /// 200 – результат запроса содержит сведения о среднемесячных платежах Субъекта;
+    /// 202 – результат запроса содержит квитанцию с информацией об ошибке «Ответ не готов»;
+    /// 400 – результат запроса содержит квитанцию с информацией об ошибке, кроме ошибки «Ответ не готов».
+    /// В случае получения ошибки «Ответ не готов» клиент должен повторить запрос не ранее, чем через 1 секунду.
+    /// 404 - неправильный идентификатор.
     /// </returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public static async Task PostRequestAsync(string cmd, string file, string resultFile)
+    public static async Task PostRequestAsync(string cmd, string file, string resultFile, string? answerFile = null)
     {
         if (!File.Exists(file))
         {
@@ -126,7 +138,7 @@ internal static class Api
         }
 
         ByteArrayContent content = new(File.ReadAllBytes(file));
-        using HttpResponseMessage response = await _client.PostAsync(cmd, content);
+        using HttpResponseMessage response = await _client.PostAsync(cmd.Equals(auto) ? dlrequest : cmd, content);
 
         if ((int)response.StatusCode == 495)
         {
@@ -135,7 +147,8 @@ internal static class Api
             Environment.Exit(495);
         }
 
-        int result = await WriteResultFileAsync(resultFile, response);
+        (int result, string xml) = await ApiHelper.WriteResultFileAsync(resultFile, response, _config.CleanSign);
+        response.Dispose();
 
         string o = result switch
         {
@@ -147,7 +160,32 @@ internal static class Api
 
         Console.WriteLine($"Ответ {result} - {o}");
 
-        Environment.Exit(result);
+        if (!cmd.Equals(auto))
+        {
+            Environment.Exit(result);
+        }
+
+        if (result != 202)
+        {
+            Console.WriteLine("Автоматическое получение ответа невозможно.");
+
+            Environment.Exit(result);
+        }
+
+        // GetAnswerAsync
+
+        Console.WriteLine("Этап 2 - получение сведений...");
+
+        XmlDocument doc = new();
+        doc.LoadXml(xml);
+        string id = doc.DocumentElement!.FirstChild!.InnerText;
+
+        if (answerFile is null)
+        {
+            throw new ArgumentNullException(answerFile, "Answer filename required.");
+        }
+
+        await GetAnswerAsync(dlanswer, id, answerFile);
     }
 
     /// <summary>
@@ -160,7 +198,7 @@ internal static class Api
     /// <param name="cmd">Метод API ("dlanswer" или "dlputanswer").</param>
     /// <param name="id">Идентификатор Guid (вида A6563526-A3F3-4D4E-A923-E41E93F1D921)
     /// или файл результата отправки запроса, где его можно взять.</param>
-    /// <param name="resultFile">Имя файла для ответной квитанции.
+    /// <param name="resultFile">Имя файла для получения информации.
     /// Если в конфиге CleanSign: true, то будут очищенный файл и файл.sig в исходном формате PKCS#7.</param>
     /// <returns>
     /// 200 – результат запроса содержит сведения о среднемесячных платежах Субъекта;
@@ -176,9 +214,9 @@ internal static class Api
 
         if (File.Exists(id))
         {
-            XmlDocument xml = new();
-            xml.Load(id);
-            id = xml.DocumentElement!.FirstChild!.InnerText;
+            XmlDocument doc = new();
+            doc.Load(id);
+            id = doc.DocumentElement!.FirstChild!.InnerText;
         }
 
         if (id.Length != 36) // check Guid
@@ -188,10 +226,11 @@ internal static class Api
             Environment.Exit(404);
         }
 
-        while (++retries <= 10)
-        { 
+        while (++retries <= _config.MaxRetries)
+        {
             using HttpResponseMessage response = await _client.GetAsync(cmd + "?id=" + id);
-            result = await WriteResultFileAsync(resultFile, response);
+            (result, _) = await ApiHelper.WriteResultFileAsync(resultFile, response, _config.CleanSign);
+            response.Dispose();
 
             if (result != 202) break;
 
@@ -211,44 +250,4 @@ internal static class Api
 
         Environment.Exit(result);
     }
-
-    #endregion public
-    #region private
-
-    /// <summary>
-    /// Разобрать ответ сервера, записать файл с текстом полученной квитанции и вернуть код результата запроса.
-    /// </summary>
-    /// <param name="file">Имя файла для ответной квитанции.
-    /// Если в конфиге CleanSign: true, то будут очищенный файл и файл.sig в исходном формате PKCS#7.</param>
-    /// <param name="response">Комплексный ответ сервера.</param>
-    /// <returns>Код результата запроса, возвращенный сервером.</returns>
-    /// <exception cref="UnauthorizedAccessException"></exception>
-    private static async Task<int> WriteResultFileAsync(string file, HttpResponseMessage response)
-    {
-        if (File.Exists(file))
-        {
-            File.Delete(file);
-
-            if (File.Exists(file))
-            {
-                throw new UnauthorizedAccessException("Result file not deleted.");
-            }
-        }
-
-        int result = (int)response.StatusCode;
-        Console.WriteLine($"Status code: {result} {response.StatusCode}");
-        byte[] data = await response.Content.ReadAsByteArrayAsync();
-
-        if (_config.CleanSign)
-        {
-            await File.WriteAllBytesAsync(file + ".sig", data);
-            data = PKCS7.CleanSign(data);
-        }
-
-        await File.WriteAllBytesAsync(file, data);
-        
-        return result;
-    }
-
-    #endregion private
 }

@@ -43,24 +43,43 @@ internal class Program
         {
             switch (cmd)
             {
+                // API
                 case certadd:
                 case certrevoke:
                     if (args.Length != 5) Usage();
+                    // id cert.cer sign.sig result.xml
                     await PostCertAsync(cmd, args[1], args[2], args[3], args[4]);
                     break;
 
                 case dlput:
                 case dlrequest:
                     if (args.Length != 3) Usage();
+                    // request.xml result.xml
                     await PostRequestAsync(cmd, args[1], args[2]);
                     break;
 
                 case dlanswer:
                 case dlputanswer:
                     if (args.Length != 3) Usage();
+                    // id answer.xml
+                    // result.xml answer.xml
                     await GetAnswerAsync(cmd, args[1], args[2]);
                     break;
 
+                // Extra
+                case auto:
+                    if (args.Length != 3) Usage();
+                    // request.xml result.xml answer.xml
+                    await PostRequestAsync(cmd, args[1], args[2], args[3]);
+                    break;
+
+                case dir:
+                    if (args.Length != 4) Usage();
+                    // dir requests results answers
+                    await ApiExtra.PostRequestFolderAsync(args[1], args[2], args[3], args[4]);
+                    break;
+
+                // Unknown
                 default:
                     Usage();
                     break;
@@ -87,7 +106,7 @@ internal class Program
 Предоставление сведений о среднемесячных платежах субъектов кредитных историй:
     Api5704 запрос параметры
 
-Запросы:
+Запросы API:
 
 dlput – передача от БКИ данных, необходимых для формирования и предоставления
     пользователям кредитных историй сведений о среднемесячных платежах Субъекта.
@@ -107,7 +126,17 @@ dlputanswer – получение информации о результата�
 certadd – добавление нового сертификата абонента.
 certrevoke – отзыв сертификата абонента.
 
-    Параметры: id cert.cer sign.sig result.xml";
+    Параметры: id cert.cer sign.sig result.xml
+
+Запросы расширенные:
+
+auto - запрос (dlrequest) и получение (dlanswer) за один запуск.
+
+    Параметры: request.xml result.xml answer.xml
+
+dir - пакетная обработка запросов (auto) из папки.
+
+    Параметры: sources requests results answers";
 
         Console.WriteLine(usage);
 

@@ -6,31 +6,39 @@
     },
     "dlrequest": {
       "commandName": "Project",
-      "commandLineArgs": "dlrequest\r\nrequest.xml\r\ndlrequest.result"
+      "commandLineArgs": "dlrequest\r\nrequest.xml\r\nresult.xml"
     },
     "dlanswer": {
       "commandName": "Project",
-      "commandLineArgs": "dlanswer\r\ne700e32f-ce85-4f0a-9cee-31b8bc14a7a0\r\ndlanswer.result"
+      "commandLineArgs": "dlanswer\r\ne700e32f-ce85-4f0a-9cee-31b8bc14a7a0\r\nanswer.xml"
     },
     "dlputanswer": {
       "commandName": "Project",
-      "commandLineArgs": "dlputanswer\r\n945cb186-0d50-45ff-8823-797942987638\r\ndlputanswer.result"
+      "commandLineArgs": "dlputanswer\r\n945cb186-0d50-45ff-8823-797942987638\r\nputanswer.xml"
     },
     "dlput": {
       "commandName": "Project",
-      "commandLineArgs": "dlput\r\nqcb_put.xml.sig\r\ndlput.result"
+      "commandLineArgs": "dlput\r\nqcb_put.xml.sig\r\nput.result.xml"
     },
     "certadd": {
       "commandName": "Project",
-      "commandLineArgs": "certadd\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertadd.result"
+      "commandLineArgs": "certadd\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertadd.result.xml"
     },
     "certrevoke": {
       "commandName": "Project",
-      "commandLineArgs": "certrevoke\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertrevoke.result"
+      "commandLineArgs": "certrevoke\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertrevoke.result.xml"
     },
     "dlanswer file": {
       "commandName": "Project",
-      "commandLineArgs": "dlanswer\r\nresult.xml\r\ndlanswer.result"
+      "commandLineArgs": "dlanswer\r\nresult.xml\r\nanswer2.xml"
+    },
+    "dlauto": {
+      "commandName": "Project",
+      "commandLineArgs": "dlauto\r\nrequest.xml\r\nresult.xml\r\nanswer3.xml"
+    },
+    "dlauto folders": {
+      "commandName": "Project",
+      "commandLineArgs": "dlauto\r\nrequests\r\nresults\r\nanswers"
     }
   }
 }

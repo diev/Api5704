@@ -1,6 +1,17 @@
 version: '{build}'
 image: Visual Studio 2022
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+  - main
+skip_tags: true
+skip_branch_with_pr: true
+max_jobs: 1
+
 configuration: Release
+
 init:
 - cmd: >-
     tzutil /s "Russian Standard Time"
@@ -25,26 +36,27 @@ install:
 
     $env:BuildDate = $CommitDateTime.ToString('yyyy-MM-dd')
 
+    $env:AppZip = "$env:APPVEYOR_PROJECT_NAME-v$env:APPVEYOR_BUILD_VERSION.zip"
+
     Write-Host "Building v$env:APPVEYOR_BUILD_VERSION dated $env:BuildDate"
 build_script:
-- cmd: >-
-    build.cmd
+- cmd: build.cmd
 artifacts:
-- path: $(appveyor_project_name)-v$(appveyor_build_version).zip
+- path: *.zip
   name: AppZip
 deploy:
 - provider: GitHub
-  tag: v$(appveyor_build_version)
-  release: $(appveyor_project_name) v$(appveyor_build_version)
-  description: '* $(appveyor_repo_commit_message)\n\nBuild #$(appveyor_build_number) by AppVeyor $(BuildDate)'
+  tag: v$(APPVEYOR_BUILD_VERSION)
+  release: $(APPVEYOR_PROJECT_NAME) v$(APPVEYOR_BUILD_VERSION)
+  description: '* $(APPVEYOR_REPO_COMMIT_MESSAGE)\n\nBuild #$(APPVEYOR_BUILD_NUMBER) by AppVeyor $(BuildDate)'
   auth_token:
     secure: Oyf/ccEamPwfWLPEZQlf9hPfhGGXu3Kqnmt9saeaTMH2OE6OR0tAt2JkDl/FRR9o
   artifact: AppZip
-  draft: false
-  prerelease: true
   force_update: true
   on:
-    branch: main
+    branch:
+      - master
+      - main
 only_commits:
   files:
     - '*.cs'

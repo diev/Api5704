@@ -10,7 +10,7 @@ for %%i in (%src%\*.csproj) do (
  set app=%%~ni
 )
 
-rd /s /q bin
+if exist bin rd /s /q bin
 
 rem Build an app with many dlls (default)
 rem dotnet publish %prj% -o bin
@@ -35,13 +35,14 @@ set ymd=%date%
 reg add "hkcu\control panel\international" /v sshortdate /t reg_sz /d %sfmt% /f >nul
 reg add "hkcu\control panel\international" /v slongdate /t reg_sz /d %lfmt% /f >nul
 
-set pack=%app%-v%version%.zip
+if /%AppZip%/==// set pack=%app%-v%version%.zip
+if not /%AppZip%/==// set pack=%AppZip%
 if exist %pack% del %pack%
 
 call :version_txt > bin\version.txt
 
-"C:\Program Files\7-Zip\7z.exe" a %pack% *.md *.sln *.cmd bin\ Templates\ XLSM\
-"C:\Program Files\7-Zip\7z.exe" a %pack% -x!.* -xr!bin -xr!obj -xr!PublishProfiles -xr!*.user %src%\
+"C:\Program Files\7-Zip\7z.exe" a %pack% LICENSE *.md *.sln *.cmd bin\ Templates\ XLSM\
+"C:\Program Files\7-Zip\7z.exe" a %pack% -r -x!.* -x!bin -x!obj -x!PublishProfiles -x!*.user %src%\
 
 set store=G:\BankApps\AppStore
 if exist %store% copy /y %pack% %store%
