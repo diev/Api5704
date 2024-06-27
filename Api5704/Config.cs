@@ -33,10 +33,10 @@ public class Config
     public bool SignFile { get; set; } = true;
     public bool CleanSign { get; set; } = true;
     public int MaxRetries { get; set; } = 10;
-    public string DirSource { get; set; } = string.Empty;
-    public string DirRequests { get; set; } = string.Empty;
-    public string DirResults { get; set; } = string.Empty;
-    public string DirAnswers { get; set; } = string.Empty;
+    public string DirSource { get; set; } = @"OUT\*.xml";
+    public string DirRequests { get; set; } = @"Requests\{name}.{date}.{guid}.request.xml";
+    public string DirResults { get; set; } = @"Results\{name}.{date}.{guid}.result.xml";
+    public string DirAnswers { get; set; } = @"Answers\{name}.{date}.{guid}.answer.xml";
     public string CspTest { get; set; } =
         @"C:\Program Files\Crypto Pro\CSP\csptest.exe";
     public string CspTestSignFile { get; set; } =

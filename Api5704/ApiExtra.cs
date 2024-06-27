@@ -17,8 +17,9 @@ limitations under the License.
 */
 #endregion
 
-using System.Text;
 using System.Xml;
+using System.Text;
+using System;
 
 namespace Api5704;
 
@@ -27,42 +28,94 @@ public static class ApiExtra
     /// <summary>
     /// Пакетная обработка папок с запросами (Extra dir).
     /// </summary>
-    /// <param name="source">Папка с исходными запросами.</param>
-    /// <param name="requests">Папка с отправленными запросами.</param>
-    /// <param name="results">Папка с полученными квитанциями.</param>
-    /// <param name="answers">Папка с полученными сведениями.</param>
-    public static async Task PostRequestFolderAsync(string source, string requests, string results, string answers)
+    /// <param name="source">Папка+маска с исходными запросами.</param>
+    /// <param name="request">Папка+файл с отправленными запросами.</param>
+    /// <param name="result">Папка+файл с полученными квитанциями.</param>
+    /// <param name="answer">Папка+файл с полученными сведениями.</param>
+    /// <returns>
+    /// API этап 1 (dlrequest):
+    /// 200 – результат запроса содержит информацию о результатах загрузки данных в базу данных КБКИ;
+    /// 202 – результат запроса содержит квитанцию с идентификатором ответа;
+    /// 400 – результат запроса содержит квитанцию с информацией об ошибке;
+    /// 495 - сервер не признает наш сертификат - доступ отказан.
+    /// API этап 2 (dlanswer):
+    /// 200 – результат запроса содержит сведения о среднемесячных платежах Субъекта;
+    /// 202 – результат запроса содержит квитанцию с информацией об ошибке «Ответ не готов»;
+    /// 400 – результат запроса содержит квитанцию с информацией об ошибке, кроме ошибки «Ответ не готов».
+    /// В случае получения ошибки «Ответ не готов» клиент должен повторить запрос не ранее, чем через 1 секунду.
+    /// 404 - неправильный идентификатор.
+    /// </returns>
+    public static async Task<int> PostRequestFolderAsync(string source, string request, string result, string answer)
     {
-        if (!requests.Equals(string.Empty)) Directory.CreateDirectory(requests);
-        if (!results.Equals(string.Empty)) Directory.CreateDirectory(results);
-        if (!answers.Equals(string.Empty)) Directory.CreateDirectory(answers);
+        int ret = 1;
+
+        if (string.IsNullOrEmpty(request) || string.IsNullOrEmpty(result) || string.IsNullOrEmpty(answer))
+        {
+            Console.WriteLine("Не указаны параметры папок.");
+
+            return 1;
+        }
+
+        (string dirSource, string maskSource) = ApiHelper.GetDirMask(source);
+
+        string fmt = request + result + answer;
+        bool nameRequired = fmt.Contains("{name}");
+        bool dateRequired = fmt.Contains("{date}");
+        bool guidRequired = fmt.Contains("{guid}");
 
         int count = 0;
 
-        foreach (var file in Directory.GetFiles(source, "*.xml"))
+        foreach (var file in Directory.GetFiles(dirSource, maskSource))
         {
-            byte[] data = File.ReadAllBytes(file);
-
-            if (data[0] == 0x30)
+            if (nameRequired)
             {
-                //data = PKCS7.CleanSign(data);
-                data = await ASN1.CleanSignAsync(data);
+                string name = Path.GetFileNameWithoutExtension(file);
+
+                request = request.Replace("{name}", name);
+                result = result.Replace("{name}", name);
+                answer = answer.Replace("{name}", name);
             }
 
-            XmlDocument doc = new();
-            doc.LoadXml(Encoding.UTF8.GetString(data));
-            string id = doc.DocumentElement!.GetAttribute("ИдентификаторЗапроса");
+            if (dateRequired)
+            {
+                string date = DateTime.Now.ToString("yyyy-MM-dd");
 
-            string date = DateTime.Now.ToString("yyyy-MM-dd");
-            string name = $"{Path.GetFileName(file)}.{date}.{id}";
+                request = request.Replace("{date}", date);
+                result = result.Replace("{date}", date);
+                answer = answer.Replace("{date}", date);
+            }
 
-            string request = Path.Combine(results, name + ".request.xml");
-            string result = Path.Combine(results, name + ".result.xml");
-            string answer = Path.Combine(answers, name + ".answer.xml");
+            if (guidRequired)
+            {
+                byte[] data = File.ReadAllBytes(file);
+
+                if (data[0] == 0x30)
+                {
+                    //data = PKCS7.CleanSign(data);
+                    data = await ASN1.CleanSignAsync(data);
+                }
+
+                XmlDocument doc = new();
+                doc.LoadXml(Encoding.UTF8.GetString(data));
+                string guid = doc.DocumentElement!.GetAttribute("ИдентификаторЗапроса");
+
+                request = request.Replace("{guid}", guid);
+                result = result.Replace("{guid}", guid);
+                answer = answer.Replace("{guid}", guid);
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(request)!);
+            Directory.CreateDirectory(Path.GetDirectoryName(result)!);
+            Directory.CreateDirectory(Path.GetDirectoryName(answer)!);
 
             File.Copy(file, request, true);
 
-            await Api.PostRequestAsync(Api.auto, request, result, answer);
+            ret = await Api.PostRequestAsync(Api.dir, request, result, answer);
+
+            if (ret == 495)
+            {
+                return ret;
+            }
 
             if (File.Exists(answer))
             {
@@ -75,6 +128,6 @@ public static class ApiExtra
 
         Console.WriteLine($"Сведений получено: {count}.");
 
-        Environment.Exit(0);
+        return ret;
     }
 }

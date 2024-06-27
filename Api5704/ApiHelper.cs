@@ -23,6 +23,22 @@ namespace Api5704;
 
 public class ApiHelper
 {
+    public static (string, string) GetDirMask(string path)
+    {
+        var dir = Path.GetDirectoryName(path);
+        string mask = Path.GetFileName(path);
+
+        if (string.IsNullOrEmpty(dir))
+        {
+            return (string.Empty, mask);
+        }
+        else
+        {
+            Directory.CreateDirectory(dir);
+            return (dir, mask);
+        }
+    }
+
     /// <summary>
     /// Разобрать ответ сервера, записать файл с текстом полученной квитанции и вернуть код результата запроса
     /// и содержимое квитанции.

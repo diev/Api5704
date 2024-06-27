@@ -30,6 +30,7 @@ internal class Program
     static async Task Main(string[] args)
     {
         Console.WriteLine("Hello, World!"); // :)
+        int result = 0;
 
         if (!TryGetConfig())
         {
@@ -38,19 +39,23 @@ internal class Program
 
         if (args.Length == 0)
         {
-            string source = Config.DirSource;
+            if (!string.IsNullOrEmpty(Config.DirSource))
+            {
+                string source = Config.DirSource;
+                string dir = Path.GetDirectoryName(source)!;
 
-            if (!string.IsNullOrEmpty(source) && Directory.Exists(source))
-            {
-                Console.WriteLine(@$"Параметры не указаны, но есть папка ""{source}"".");
-                // source requests results answers
-                await ApiExtra.PostRequestFolderAsync(source,
-                    Config.DirRequests, Config.DirResults, Config.DirAnswers);
+                if (Directory.Exists(dir))
+                {
+                    Console.WriteLine(@$"Параметры не указаны, но есть папка ""{dir}"".");
+                    // source requests results answers
+                    result = await ApiExtra.PostRequestFolderAsync(source,
+                        Config.DirRequests, Config.DirResults, Config.DirAnswers);
+
+                    Environment.Exit(result);
+                }
             }
-            else
-            {
-                Usage();
-            }
+
+            Usage();
         }
 
         string cmd = args[0].ToLower();
@@ -64,14 +69,14 @@ internal class Program
                 case certrevoke:
                     if (args.Length != 5) Usage();
                     // id cert.cer sign.sig result.xml
-                    await PostCertAsync(cmd, args[1], args[2], args[3], args[4]);
+                    result = await PostCertAsync(cmd, args[1], args[2], args[3], args[4]);
                     break;
 
                 case dlput:
                 case dlrequest:
                     if (args.Length != 3) Usage();
                     // request.xml result.xml
-                    await PostRequestAsync(cmd, args[1], args[2]);
+                    result = await PostRequestAsync(cmd, args[1], args[2]);
                     break;
 
                 case dlanswer:
@@ -79,20 +84,20 @@ internal class Program
                     if (args.Length != 3) Usage();
                     // id answer.xml
                     // result.xml answer.xml
-                    await GetAnswerAsync(cmd, args[1], args[2]);
+                    result = await GetAnswerAsync(cmd, args[1], args[2]);
                     break;
 
                 // Extra
                 case auto:
                     if (args.Length != 3) Usage();
                     // request.xml result.xml answer.xml
-                    await PostRequestAsync(cmd, args[1], args[2], args[3]);
+                    result = await PostRequestAsync(cmd, args[1], args[2], args[3]);
                     break;
 
                 case dir:
                     if (args.Length != 4) Usage();
                     // source requests results answers
-                    await ApiExtra.PostRequestFolderAsync(args[1], args[2], args[3], args[4]);
+                    result = await ApiExtra.PostRequestFolderAsync(args[1], args[2], args[3], args[4]);
                     break;
 
                 // Unknown
@@ -103,6 +108,7 @@ internal class Program
         }
         catch (Exception e)
         {
+            result = 1;
             Console.WriteLine("--- Error! ---");
             Console.WriteLine(e.Message);
 
@@ -113,7 +119,7 @@ internal class Program
             }
         }
 
-        Environment.Exit(2);
+        Environment.Exit(result);
     }
 
     private static void Usage()
@@ -152,8 +158,9 @@ auto - запрос (dlrequest) и получение (dlanswer) за один �
 
 dir - пакетная обработка запросов (auto) из папки.
     Это действие по умолчанию, если параметров не указано, но есть папка DirSource в конфиге.
+    Подробнее см. в README.
 
-    Параметры: source requests results answers";
+    Параметры: source request result answer";
 
         Console.WriteLine(usage);
 

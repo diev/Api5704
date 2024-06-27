@@ -55,7 +55,7 @@ public class Api
     /// 200 – квитанция содержит информацию об успешной обработке запроса;
     /// 400 – квитанция содержит информацию об ошибке.
     /// </returns>
-    public static async Task PostCertAsync(string cmd, string id, string cert, string sign, string resultFile)
+    public static async Task<int> PostCertAsync(string cmd, string id, string cert, string sign, string resultFile)
     {
         if (!File.Exists(cert))
         {
@@ -92,7 +92,7 @@ public class Api
 
         Console.WriteLine($"Ответ {result} - {o}");
 
-        Environment.Exit(result);
+        return result;
     }
 
     /// <summary>
@@ -102,14 +102,16 @@ public class Api
     /// dlrequest – запрос сведений о среднемесячных платежах Субъекта.
     /// Extra
     /// auto - запрос и получение сведений (dlrequest + dlanswer) за один запуск.
+    /// dir - пакетная обработка режима auto для папки файлов.
     /// </summary>
-    /// <param name="cmd">Метод API ("dlput" или "dlrequest") или Extra "auto".</param>
+    /// <param name="cmd">Методы API: "dlput", "dlrequest"
+    /// или Extra: "auto", "dir".</param>
     /// <param name="file">Имя файла с запросом в кодировке utf-8.
     /// Если в конфиге SignFile: true и файл без расширения .sig, то он будет подписан ЭП в формате PKCS#7
     /// (рядом появится файл с расширением .sig, который и будет отправлен).</param>
     /// <param name="resultFile">Имя файла для ответной квитанции.
     /// Если в конфиге CleanSign: true, то будут очищенный файл и файл.sig в исходном формате PKCS#7.</param>
-    /// <param name="answerFile">Имя файла для получения информации (Extra, только при "dlauto").
+    /// <param name="answerFile">Имя файла для получения информации (Extra).
     /// Если в конфиге CleanSign: true, то будут очищенный файл и файл.sig в исходном формате PKCS#7.</param>
     /// <returns>
     /// 200 – результат запроса содержит информацию о результатах загрузки данных в базу данных КБКИ;
@@ -123,7 +125,7 @@ public class Api
     /// В случае получения ошибки «Ответ не готов» клиент должен повторить запрос не ранее, чем через 1 секунду.
     /// 404 - неправильный идентификатор.
     /// </returns>
-    public static async Task PostRequestAsync(string cmd, string file, string resultFile, string? answerFile = null)
+    public static async Task<int> PostRequestAsync(string cmd, string file, string resultFile, string? answerFile = null)
     {
         if (!File.Exists(file))
         {
@@ -138,13 +140,26 @@ public class Api
         }
 
         ByteArrayContent content = new(File.ReadAllBytes(file));
-        using HttpResponseMessage response = await _client.PostAsync(cmd.Equals(auto) ? dlrequest : cmd, content);
+
+        bool extra = cmd switch
+        {
+            // Extra
+            auto => true,
+            dir => true,
+
+            // API
+            _ => false,
+        };
+
+        string request = extra ? dlrequest : cmd;
+
+        using HttpResponseMessage response = await _client.PostAsync(request, content);
 
         if ((int)response.StatusCode == 495)
         {
             Console.WriteLine("495 - сервер не признает наш сертификат - доступ отказан.");
 
-            Environment.Exit(495);
+            return 495;
         }
 
         (int result, string xml) = await ApiHelper.WriteResultFileAsync(resultFile, response, _config.CleanSign);
@@ -160,17 +175,19 @@ public class Api
 
         Console.WriteLine($"Ответ {result} - {o}");
 
-        if (!cmd.Equals(auto))
+        if (!extra)
         {
-            Environment.Exit(result);
+            return result;
         }
 
         if (result != 202)
         {
             Console.WriteLine("Автоматическое получение ответа невозможно.");
 
-            Environment.Exit(result);
+            return result;
         }
+
+        Thread.Sleep(1000);
 
         // GetAnswerAsync
 
@@ -185,7 +202,9 @@ public class Api
             throw new ArgumentNullException(answerFile, "Answer filename required.");
         }
 
-        await GetAnswerAsync(dlanswer, id, answerFile);
+        result = await GetAnswerAsync(dlanswer, id, answerFile);
+
+        return result;
     }
 
     /// <summary>
@@ -207,10 +226,10 @@ public class Api
     /// В случае получения ошибки «Ответ не готов» клиент должен повторить запрос не ранее, чем через 1 секунду.
     /// 404 - неправильный идентификатор.
     /// </returns>
-    public static async Task GetAnswerAsync(string cmd, string id, string resultFile)
+    public static async Task<int> GetAnswerAsync(string cmd, string id, string resultFile)
     {
         int result = 500;
-        int retries = 0;
+        int retries = 1;
 
         if (File.Exists(id))
         {
@@ -223,10 +242,10 @@ public class Api
         {
             Console.WriteLine($"Неправильный id - '{id}'.");
 
-            Environment.Exit(404);
+            return 404;
         }
 
-        while (++retries <= _config.MaxRetries)
+        while (retries <= _config.MaxRetries)
         {
             using HttpResponseMessage response = await _client.GetAsync(cmd + "?id=" + id);
             (result, _) = await ApiHelper.WriteResultFileAsync(resultFile, response, _config.CleanSign);
@@ -235,7 +254,7 @@ public class Api
             if (result != 202) break;
 
             Thread.Sleep(1000);
-            Console.WriteLine($"Ответ не готов - попытка {retries}...");
+            Console.WriteLine($"Ответ не готов - попытка {++retries}...");
         }
 
         string o = result switch
@@ -248,6 +267,6 @@ public class Api
 
         Console.WriteLine($"Ответ {result} - {o}");
 
-        Environment.Exit(result);
+        return result;
     }
 }
