@@ -38,13 +38,13 @@ internal class Program
 
         if (args.Length == 0)
         {
-            string sources = Config.DirSources;
+            string source = Config.DirSource;
 
-            if (!string.IsNullOrEmpty(sources) && Directory.Exists(sources))
+            if (!string.IsNullOrEmpty(source) && Directory.Exists(source))
             {
-                Console.WriteLine(@$"Параметры не указаны, но есть папка ""{sources}"".");
-                // dir requests results answers
-                await ApiExtra.PostRequestFolderAsync(sources,
+                Console.WriteLine(@$"Параметры не указаны, но есть папка ""{source}"".");
+                // source requests results answers
+                await ApiExtra.PostRequestFolderAsync(source,
                     Config.DirRequests, Config.DirResults, Config.DirAnswers);
             }
             else
@@ -91,7 +91,7 @@ internal class Program
 
                 case dir:
                     if (args.Length != 4) Usage();
-                    // dir requests results answers
+                    // source requests results answers
                     await ApiExtra.PostRequestFolderAsync(args[1], args[2], args[3], args[4]);
                     break;
 
@@ -151,9 +151,9 @@ auto - запрос (dlrequest) и получение (dlanswer) за один �
     Параметры: request.xml result.xml answer.xml
 
 dir - пакетная обработка запросов (auto) из папки.
-    Это действие по умолчанию, если параметров не указано, но есть папка DirSources в конфиге.
+    Это действие по умолчанию, если параметров не указано, но есть папка DirSource в конфиге.
 
-    Параметры: sources requests results answers";
+    Параметры: source requests results answers";
 
         Console.WriteLine(usage);
 
@@ -183,7 +183,7 @@ dir - пакетная обработка запросов (auto) из папк�
             using var stream = File.OpenWrite(appsettings);
             JsonSerializer.Serialize(stream, Config, GetJsonOptions());
 
-            Console.WriteLine($"Создан новый файл настроек '{appsettings}' - откорректируйте его.");
+            Console.WriteLine(@$"Создан новый файл настроек ""{appsettings}"" - откорректируйте его.");
             return false;
         }
     }

@@ -25,13 +25,13 @@ namespace Api5704;
 public static class ApiExtra
 {
     /// <summary>
-    /// Пакетная обработка папок с запросами (Extra).
+    /// Пакетная обработка папок с запросами (Extra dir).
     /// </summary>
-    /// <param name="dir">Папка с исходными запросами.</param>
+    /// <param name="source">Папка с исходными запросами.</param>
     /// <param name="requests">Папка с отправленными запросами.</param>
     /// <param name="results">Папка с полученными квитанциями.</param>
     /// <param name="answers">Папка с полученными сведениями.</param>
-    public static async Task PostRequestFolderAsync(string dir, string requests, string results, string answers)
+    public static async Task PostRequestFolderAsync(string source, string requests, string results, string answers)
     {
         if (!requests.Equals(string.Empty)) Directory.CreateDirectory(requests);
         if (!results.Equals(string.Empty)) Directory.CreateDirectory(results);
@@ -39,7 +39,7 @@ public static class ApiExtra
 
         int count = 0;
 
-        foreach (var file in Directory.GetFiles(dir, "*.xml"))
+        foreach (var file in Directory.GetFiles(source, "*.xml"))
         {
             byte[] data = File.ReadAllBytes(file);
 
