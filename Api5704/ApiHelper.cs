@@ -54,7 +54,8 @@ public class ApiHelper
             await File.WriteAllBytesAsync(file + ".sig", data);
 
             // Clean data
-            data = PKCS7.CleanSign(data);
+            //data = PKCS7.CleanSign(data);
+            data = await ASN1.CleanSignAsync(data);
 
             // Write clean XML
             await File.WriteAllBytesAsync(file, data);
@@ -65,7 +66,8 @@ public class ApiHelper
             await File.WriteAllBytesAsync(file, data);
 
             // Clean data
-            data = PKCS7.CleanSign(data);
+            //data = PKCS7.CleanSign(data);
+            data = await ASN1.CleanSignAsync(data);
         }
 
         string content = Encoding.UTF8.GetString(data);

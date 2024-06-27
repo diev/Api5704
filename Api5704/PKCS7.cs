@@ -32,12 +32,14 @@ internal static class PKCS7
     /// </summary>
     /// <param name="data">Массив байтов с сообщением в формате PKCS#7.</param>
     /// <returns>Массив байтов с исходным сообщением без ЭП.</returns>
-    public static byte[] CleanSign(byte[] data)
+    public static async Task<byte[]> CleanSign(byte[] data)
     {
-        var signedCms = new SignedCms();
-        signedCms.Decode(data);
+        //var signedCms = new SignedCms();
+        //signedCms.Decode(data);
 
-        return signedCms.ContentInfo.Content;
+        //return signedCms.ContentInfo.Content;
+
+        return await ASN1.CleanSignAsync(data);
     }
 
     /// <summary>

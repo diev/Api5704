@@ -36,7 +36,23 @@ internal class Program
             Environment.Exit(2);
         }
 
-        if (args.Length == 0) Usage();
+        if (args.Length == 0)
+        {
+            string sources = Config.DirSources;
+
+            if (!string.IsNullOrEmpty(sources) && Directory.Exists(sources))
+            {
+                Console.WriteLine(@$"Параметры не указаны, но есть папка ""{sources}"".");
+                // dir requests results answers
+                await ApiExtra.PostRequestFolderAsync(sources,
+                    Config.DirRequests, Config.DirResults, Config.DirAnswers);
+            }
+            else
+            {
+                Usage();
+            }
+        }
+
         string cmd = args[0].ToLower();
 
         try
@@ -135,6 +151,7 @@ auto - запрос (dlrequest) и получение (dlanswer) за один �
     Параметры: request.xml result.xml answer.xml
 
 dir - пакетная обработка запросов (auto) из папки.
+    Это действие по умолчанию, если параметров не указано, но есть папка DirSources в конфиге.
 
     Параметры: sources requests results answers";
 
