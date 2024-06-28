@@ -46,21 +46,21 @@ public class Config
     public string ServerAddress { get; set; } = "https://ssp.nbki.ru/qbch/";
 
     /// <summary>
+    /// Проверять отпечаток сервера
+    /// (имеет смысл при указанном ServerThumbprint).
+    /// </summary>
+    public bool ValidateThumbprint { get; set; } = false;
+
+    /// <summary>
     /// Отпечаток сертификата сервера ServerAddress
     /// (имеет смысл при включении ValidateThumbprint).
     /// </summary>
-    public string? ServerThumbprint { get; set; } = "18042E6D06AE9F05B639DF511A8583FEDE72784D";
+    public string ServerThumbprint { get; set; } = string.Empty;
     
     /// <summary>
     /// Проверять валидность сертификатов для подключения.
     /// </summary>
     public bool ValidateTls { get; set; } = true;
-
-    /// <summary>
-    /// Проверять отпечаток сервера
-    /// (имеет смысл при указанном ServerThumbprint).
-    /// </summary>
-    public bool ValidateThumbprint { get; set; } = true;
     
     /// <summary>
     /// Показывать дамп сертификата сервера при подключении.
@@ -76,7 +76,7 @@ public class Config
     /// Адрес и порт сервера прокси
     /// (имеет смысл при включении UseProxy).
     /// </summary>
-    public string? ProxyAddress { get; set; } = "http://192.168.2.1:3128";
+    public string ProxyAddress { get; set; } = "http://192.168.2.1:3128";
     
     /// <summary>
     /// Подписывать файлы при отправке или же они уже подписаны

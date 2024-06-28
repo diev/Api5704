@@ -25,17 +25,12 @@ namespace Api5704;
 
 internal class Program
 {
-    public static Config Config { get; private set; } = new();
+    public static Config Config { get; set; } = ConfigManager.Read();
 
     static async Task Main(string[] args)
     {
         Console.WriteLine("Hello, World!"); // :)
         int result = 0;
-
-        if (!TryGetConfig())
-        {
-            Environment.Exit(2);
-        }
 
         if (args.Length == 0)
         {
@@ -165,33 +160,5 @@ dir - пакетная обработка запросов (auto) из папк�
         Console.WriteLine(usage);
 
         Environment.Exit(1);
-    }
-
-    private static JsonSerializerOptions GetJsonOptions()
-    {
-        return new()
-        {
-            WriteIndented = true
-        };
-    }
-
-    private static bool TryGetConfig()
-    {
-        string appsettings = Path.ChangeExtension(Environment.ProcessPath!, ".config.json");
-
-        if (File.Exists(appsettings))
-        {
-            using var stream = File.OpenRead(appsettings);
-            Config = JsonSerializer.Deserialize<Config>(stream)!;
-            return true;
-        }
-        else
-        {
-            using var stream = File.OpenWrite(appsettings);
-            JsonSerializer.Serialize(stream, Config, GetJsonOptions());
-
-            Console.WriteLine(@$"Создан новый файл настроек ""{appsettings}"" - откорректируйте его.");
-            return false;
-        }
     }
 }
