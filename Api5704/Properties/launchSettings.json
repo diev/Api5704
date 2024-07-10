@@ -6,39 +6,46 @@
     },
     "dlrequest": {
       "commandName": "Project",
-      "commandLineArgs": "dlrequest\r\nrequest.xml\r\nresult.xml"
+      "commandLineArgs": "dlrequest request.xml result.xml"
     },
     "dlanswer": {
       "commandName": "Project",
-      "commandLineArgs": "dlanswer\r\ne700e32f-ce85-4f0a-9cee-31b8bc14a7a0\r\nanswer.xml"
+      "commandLineArgs": "dlanswer e700e32f-ce85-4f0a-9cee-31b8bc14a7a0\r\nanswer.xml"
     },
     "dlputanswer": {
       "commandName": "Project",
-      "commandLineArgs": "dlputanswer\r\n945cb186-0d50-45ff-8823-797942987638\r\nputanswer.xml"
+      "commandLineArgs": "dlputanswer 945cb186-0d50-45ff-8823-797942987638\r\nputanswer.xml"
     },
     "dlput": {
       "commandName": "Project",
-      "commandLineArgs": "dlput\r\nqcb_put.xml.sig\r\nput.result.xml"
+      "commandLineArgs": "dlput qcb_put.xml.sig put.result.xml"
     },
     "certadd": {
       "commandName": "Project",
-      "commandLineArgs": "certadd\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertadd.result.xml"
+      "commandLineArgs": "certadd A6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer kontur.cer.sig\r\ncertadd.result.xml"
     },
     "certrevoke": {
       "commandName": "Project",
-      "commandLineArgs": "certrevoke\r\nA6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer\r\nkontur.cer.sig\r\ncertrevoke.result.xml"
+      "commandLineArgs": "certrevoke A6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer kontur.cer.sig\r\ncertrevoke.result.xml"
     },
     "dlanswer file": {
       "commandName": "Project",
-      "commandLineArgs": "dlanswer\r\nresult.xml\r\nanswer2.xml"
+      "commandLineArgs": "dlanswer result.xml answer2.xml"
     },
     "dlauto": {
       "commandName": "Project",
-      "commandLineArgs": "dlauto\r\nrequest.xml\r\nresult.xml\r\nanswer3.xml"
+      "commandLineArgs": "dlauto request.xml result.xml answer3.xml"
     },
     "dlauto folders": {
       "commandName": "Project",
-      "commandLineArgs": "dlauto\r\nrequests\r\nresults\r\nanswers"
+      "commandLineArgs": "dlauto requests results answers"
+    },
+    "no args but OUT": {
+      "commandName": "Project"
+    },
+    "report": {
+      "commandName": "Project",
+      "commandLineArgs": "report answer.xml report.txt"
     }
   }
 }

@@ -1,7 +1,7 @@
 Attribute VB_Name = "RequestModule"
 Option Explicit
 
-'Редакция: 2024-06-27
+'Редакция: 2024-07-10
 
 'Версия запроса API
 Const CURR_API As String = "1.2"
@@ -502,14 +502,18 @@ Public Sub CreateDlRequest()
     
     '/ЗапросСведенийОПлатежах
     Dim File As String: File = NameFile(fioF, fioI, fioO, dz, iz)
-    XDoc.Save File
-    
-    MsgBox "Запрос сохранен в файл " & File, , ActiveWorkbook.Name
+    Dim Answer As Variant: Answer = Application.GetSaveAsFilename(File, "XML (*.xml),*.xml,Все файлы (*.*),*.*", , "Куда сохранить запрос", "Сохранить")
+    If Answer <> False Then
+        File = Answer
+        XDoc.Save File
+        MsgBox "Запрос сохранен в файл " & File, , ActiveWorkbook.Name
+    End If
 End Sub
 
 'Фамилия.И.О.yyyy-mm-dd.guid.xml
 Public Function NameFile(F As String, I As String, O As String, ymd As String, guid As String) As String
-    NameFile = OUTPUT_PATH & "\" & F & "." & Left(I, 1) & "." & Left(O, 1) & "." & ymd & "." & guid & ".xml"
+    'NameFile = OUTPUT_PATH & "\" & F & "." & Left(I, 1) & "." & Left(O, 1) & "." & ymd & "." & guid & ".xml"
+    NameFile = OUTPUT_PATH & "\" & F & "." & Left(I, 1) & "." & Left(O, 1) & ".xml"
 End Function
 
 Public Function SnilsFormatter(s As String) As String

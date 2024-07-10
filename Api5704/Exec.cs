@@ -29,7 +29,7 @@ internal static class Exec
     /// <param name="exe">Запускаемая программа.</param>
     /// <param name="cmdline">Параметры для запускаемой программы.</param>
     /// <exception cref="FileNotFoundException"></exception>
-    /// <exception cref="SystemException"></exception>
+    /// <exception cref="Exception"></exception>
     public static async Task StartAsync(string exe, string cmdline)
     {
         if (!File.Exists(exe))
@@ -40,8 +40,8 @@ internal static class Exec
         ProcessStartInfo startInfo = new()
         {
             CreateNoWindow = false,
-            WindowStyle = ProcessWindowStyle.Hidden,
-            UseShellExecute = false,
+            WindowStyle = ProcessWindowStyle.Normal, // NO .Hidden with CryptoPro!!!
+            UseShellExecute = true, // NO false with CryptoPro!!!
             FileName = exe,
             Arguments = cmdline
         };
@@ -61,7 +61,7 @@ internal static class Exec
         }
         catch (Exception ex)
         {
-            throw new SystemException($"Fail to start [\"{exe}\" {cmdline}]", ex);
+            throw new Exception($"Fail to start [\"{exe}\" {cmdline}]", ex);
         }
     }
 }

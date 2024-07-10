@@ -17,8 +17,6 @@ limitations under the License.
 */
 #endregion
 
-using System.Security.Cryptography.Pkcs; //TODO: Windows only?
-
 namespace Api5704;
 
 /// <summary>
@@ -34,6 +32,8 @@ internal static class PKCS7
     /// <returns>Массив байтов с исходным сообщением без ЭП.</returns>
     public static async Task<byte[]> CleanSign(byte[] data)
     {
+        //using System.Security.Cryptography.Pkcs;
+
         //var signedCms = new SignedCms();
         //signedCms.Decode(data);
 
@@ -64,7 +64,7 @@ internal static class PKCS7
 
         if (!File.Exists(resultFile))
         {
-            throw new FileNotFoundException("Signed file not created.", resultFile);
+            throw new FileNotFoundException("Signed file not created. Token not found?", resultFile);
         }
     }
 }

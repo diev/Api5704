@@ -36,7 +36,8 @@ public class Api
 
     // Extra
     public const string auto = nameof(auto); // dlrequest + dlanswer
-    public const string dir = nameof(dir); // dlrequest + dlanswer
+    public const string dir = nameof(dir); // (dlrequest + dlanswer) * N
+    public const string report = nameof(report); // answer xml -> txt
 
     /// <summary>
     /// POST

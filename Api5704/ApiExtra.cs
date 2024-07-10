@@ -17,14 +17,15 @@ limitations under the License.
 */
 #endregion
 
-using System.Xml;
 using System.Text;
-using System;
+using System.Xml;
 
 namespace Api5704;
 
 public static class ApiExtra
 {
+    private record Agreement(string Id, string Date, string Val, string Sum);
+
     /// <summary>
     /// Пакетная обработка папок с запросами (Extra dir).
     /// </summary>
@@ -121,6 +122,9 @@ public static class ApiExtra
             {
                 File.Delete(file);
                 count++;
+
+                string report = Path.ChangeExtension(answer, "txt");
+                await MakeReportAsync(answer, report);
             }
 
             Thread.Sleep(1000);
@@ -129,5 +133,107 @@ public static class ApiExtra
         Console.WriteLine($"Сведений получено: {count}.");
 
         return ret;
+    }
+
+    /// <summary>
+    /// Получение сводного текстового отчета по сведениям в XML.
+    /// </summary>
+    /// <param name="answer">Полученный файл с информацией.</param>
+    /// <param name="report">Имя файла для сводного отчета.</param>
+    /// <returns>Код возврата (0 - успех, 1 - файл не создан).</returns>
+    /// <exception cref="Exception"></exception>
+    public static async Task<int> MakeReportAsync(string answer, string report)
+    {
+        XmlDocument doc = new();
+        doc.Load(answer);
+
+        // СведенияОПлатежах
+        var root = doc.DocumentElement
+            ?? throw new Exception("XML не содержит корневого элемента.");
+
+        // Титульная Часть
+        var title = root.FirstChild
+            ?? throw new Exception("XML не содержит Титульную часть."); ;
+
+        // ФИО
+        var fio = title.FirstChild
+            ?? throw new Exception("XML не содержит ФИО."); //TODO XPath
+
+        string fio3 =
+            $"{fio.ChildNodes[0]?.InnerText} {fio.ChildNodes[1]?.InnerText} {fio.ChildNodes[2]?.InnerText}"
+            .Trim();
+
+        Dictionary<string,Agreement> list = [];
+
+        foreach (XmlNode node in root.ChildNodes)
+        {
+            // КБКИ
+            if (!node.LocalName.Equals("КБКИ", StringComparison.Ordinal))
+                continue;
+
+            // Обязательства
+            var duties = node.FirstChild;
+
+            // ОбязательствНет
+            if (duties is null || !duties.HasChildNodes)
+                continue;
+
+            // БКИ
+            var bki = duties.FirstChild;
+
+            if (bki is null)
+                continue;
+
+            // Договор
+            foreach (XmlNode agreement in bki.ChildNodes)
+            {
+                // УИД
+                string id = agreement.Attributes!["УИД"]!.Value;
+                
+                // СреднемесячныйПлатеж
+                var details = agreement.FirstChild;
+
+                if (details is null)
+                    continue;
+
+                string date = details.Attributes!["ДатаРасчета"]!.Value;
+                string val = details.Attributes["Валюта"]!.Value;
+                string sum = details.InnerText;
+
+                Agreement add = new(id, date, val, sum);
+
+                if (list.TryGetValue(id, out var found))
+                {
+                    if (found is null ||
+                        string.Compare(date, found.Date, false) > 0)
+                    {
+                        list.Remove(id);
+                        list.Add(id, add);
+                        continue;
+                    }
+                }
+                else
+                {
+                    list.Add(id, add);
+                    continue;
+                }
+            }
+        }
+
+        StringBuilder sb = new();
+        sb.AppendLine(fio3).AppendLine();
+        long total = 0;
+
+        foreach (var item in list.Values.ToList<Agreement>())
+        {
+            sb.AppendLine($"Договор {item.Id} на {item.Date} {item.Val} {item.Sum}");
+            total += long.Parse(item.Sum.Replace(".", "")); //TODO separate RUB, etc.
+        }
+
+        sb.AppendLine().AppendLine($"Total: {total/100:#.00}");
+
+        await File.WriteAllTextAsync(report, sb.ToString(), Encoding.UTF8); //TODO Condig Encoding
+        
+        return File.Exists(report) ? 0 : 1;
     }
 }
