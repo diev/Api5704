@@ -1,7 +1,7 @@
 Attribute VB_Name = "HashModule"
 Option Explicit
 
-'Редакция: 2024-07-10
+'Р РµРґР°РєС†РёСЏ: 2024-07-10
 
 Const UTIL As String = "C:\Program Files (x86)\Crypto Pro\CSP\cpverify.exe"
 Const ARGS As String = " -logfile %2 -mk -alg GR3411_2012_256 %1"
@@ -10,21 +10,21 @@ Public Sub CalcHash()
     Dim Answer As Variant
     Dim Pdf As String, Hash As String
     
-    Answer = Application.GetOpenFilename("PDF (*.pdf),*.pdf,Все файлы (*.*),*.*", , "Выберите файл PDF для расчета ХэшКода")
+    Answer = Application.GetOpenFilename("PDF (*.pdf),*.pdf,Р’СЃРµ С„Р°Р№Р»С‹ (*.*),*.*", , "Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р» PDF РґР»СЏ СЂР°СЃС‡РµС‚Р° РҐСЌС€РљРѕРґР°")
     If Answer <> False Then
         Pdf = Answer
         Hash = GetHash(Pdf)
     End If
     
-    'MsgBox Pdf & vbCrLf & Hash, , "ХэшКод"
-    Answer = InputBox(Pdf & vbCrLf & "скопируйте и вставьте", "ХэшКод", Hash)
+    'MsgBox Pdf & vbCrLf & Hash, , "РҐСЌС€РљРѕРґ"
+    Answer = InputBox(Pdf & vbCrLf & "СЃРєРѕРїРёСЂСѓР№С‚Рµ Рё РІСЃС‚Р°РІСЊС‚Рµ", "РҐСЌС€РљРѕРґ", Hash)
 End Sub
 
 Public Sub ReadHash()
     Dim Answer As Variant
     Dim Txt As String, Hash As String
     
-    Answer = Application.GetOpenFilename("TXT (*.txt),*.txt,Все файлы (*.*),*.*", , "Выберите файл TXT с ХэшКодом")
+    Answer = Application.GetOpenFilename("TXT (*.txt),*.txt,Р’СЃРµ С„Р°Р№Р»С‹ (*.*),*.*", , "Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р» TXT СЃ РҐСЌС€РљРѕРґРѕРј")
     If Answer <> False Then
         Txt = Answer
         fn = FreeFile
@@ -33,8 +33,8 @@ Public Sub ReadHash()
         Close fn
     End If
     
-    'MsgBox Txt & vbCrLf & Hash, , "ХэшКод"
-    Answer = InputBox(Txt & vbCrLf & "скопируйте и вставьте", "ХэшКод", Hash)
+    'MsgBox Txt & vbCrLf & Hash, , "РҐСЌС€РљРѕРґ"
+    Answer = InputBox(Txt & vbCrLf & "СЃРєРѕРїРёСЂСѓР№С‚Рµ Рё РІСЃС‚Р°РІСЊС‚Рµ", "РҐСЌС€РљРѕРґ", Hash)
 End Sub
 
 Public Function GetHash(Pdf) As String

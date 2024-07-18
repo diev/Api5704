@@ -188,7 +188,9 @@ public class Api
             return result;
         }
 
-        Thread.Sleep(1000);
+        Console.WriteLine("Даем 5 секунд серверу подготовить сведения...");
+
+        Thread.Sleep(5000); // Up to 4 seconds to answer is allowed in v1.3
 
         // GetAnswerAsync
 

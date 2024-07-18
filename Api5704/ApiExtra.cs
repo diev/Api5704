@@ -224,15 +224,15 @@ public static class ApiExtra
         sb.AppendLine(fio3).AppendLine();
         long total = 0;
 
-        foreach (var item in list.Values.ToList<Agreement>())
+        foreach (var item in list.Values.ToList())
         {
             sb.AppendLine($"Договор {item.Id} на {item.Date} {item.Val} {item.Sum}");
             total += long.Parse(item.Sum.Replace(".", "")); //TODO separate RUB, etc.
         }
 
-        sb.AppendLine().AppendLine($"Total: {total/100:#.00}");
+        sb.AppendLine().AppendLine($"Total: {total/100:#.00}"); //TODO XSLT
 
-        await File.WriteAllTextAsync(report, sb.ToString(), Encoding.UTF8); //TODO Condig Encoding
+        await File.WriteAllTextAsync(report, sb.ToString(), Encoding.UTF8); //TODO Config Encoding
         
         return File.Exists(report) ? 0 : 1;
     }

@@ -1,7 +1,7 @@
 Attribute VB_Name = "GuidModule"
 Option Explicit
 
-'Редакция: 2024-07-10
+'Р РµРґР°РєС†РёСЏ: 2024-07-10
 
 Public Type GUID_TYPE
     Data1 As Long
@@ -42,4 +42,3 @@ End Function
 Public Sub guid()
     ActiveCell = CreateGuidStr()
 End Sub
-
