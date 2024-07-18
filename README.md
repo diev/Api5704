@@ -1,7 +1,7 @@
 # Api5704
 [![Build status](https://ci.appveyor.com/api/projects/status/0rnoo3ra0mwyc327?svg=true)](https://ci.appveyor.com/project/diev/api5704)
+[![.NET8 Desktop](https://github.com/diev/Api5704/actions/workflows/dotnet8-desktop.yml/badge.svg)](https://github.com/diev/Api5704/actions/workflows/dotnet8-desktop.yml)
 [![GitHub Release](https://img.shields.io/github/release/diev/Api5704.svg)](https://github.com/diev/Api5704/releases/latest)
-![badge](https://github.com/diev/Api5704/actions/workflows/dotnet8-desktop.yml/badge.svg)
 
 Передача сведений о среднемесячных платежах (ССП) по Указанию Банка
 России от 11.01.2021 № 5704-У «О порядке и форме предоставления сведений
@@ -276,3 +276,5 @@
 
 Licensed under the [Apache License, Version 2.0](LICENSE).
 Вы можете использовать эти материалы под свою ответственность.
+
+[![Telegram](https://img.shields.io/badge/t.me-dievdo-blue?logo=telegram)](https://t.me/dievdo)
