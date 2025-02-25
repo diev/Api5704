@@ -1,6 +1,10 @@
-# Шаблоны для ReplForms
+# Шаблоны для программы ReplForms
 
 Templates for <https://github.com/diev/ReplForms>
+
+Зеркала этой программы доступны на:
+- <https://gitverse.ru/diev/ReplForms>
+- <https://gitflic.ru/project/diev/replforms>
 
 Replaces every `key[:value:remark:regexp]` in a template XML file with
 DataGridView inserted and validated values.

@@ -1,12 +1,12 @@
 Attribute VB_Name = "RequestModule"
 Option Explicit
 
-'Редакция: 2024-07-18
+'Редакция: 2025-02-25
 
 'Версия запроса API
-Const CURR_API As String = "1.2"
-'Const NEXT_API As String = "1.3"
-'Const NEXT_DATE As Date = #7/10/2024# 'M/DD/YYYY (en-us)
+Const CURR_API As String = "2.0"
+'Const NEXT_API As String = "2.0"
+'Const NEXT_DATE As Date = #2/25/2025# 'M/DD/YYYY (en-us)
 
 'Папка для сохранения запросов
 Const OUTPUT_PATH As String = "C:\TEMP"
@@ -132,16 +132,16 @@ Public Sub CreateDlRequest()
     Set xmlVersion = XDoc.createProcessingInstruction("xml", "version=""1.0"" encoding=""UTF-8""")
     XDoc.appendChild xmlVersion
 
-    'ЗапросСведенийОПлатежах
-    Set root = XDoc.createElement("ЗапросСведенийОПлатежах")
+    'ЗапросСведений
+    Set root = XDoc.createElement("ЗапросСведений")
     XDoc.appendChild root
     'root.SetAttribute "Версия", IIf(Now < NEXT_DATE, CURR_API, NEXT_API)
     root.SetAttribute "Версия", CURR_API
     root.SetAttribute "ИдентификаторЗапроса", iz
-    
-    '1 – абонент запрашивает сведения только у запрашиваемого БКИ (до 01.07.2024);
-    '2 – абонент запрашивает сведения всех БКИ путем обращения в одно КБКИ (режим «одно окно»).
+    root.SetAttribute "ДатаЗапроса", dz
     root.SetAttribute "ТипЗапроса", "2"
+    root.SetAttribute "КодСведений", "3"
+    root.SetAttribute "РежимЗапроса", "1"
     
     'Абонент
     Set abonent = XDoc.createElement("Абонент")
@@ -167,6 +167,7 @@ Public Sub CreateDlRequest()
     
     'Запрос
     Set request = XDoc.createElement("Запрос")
+    request.SetAttribute "ПорядковыйНомер", "1"
     
         'Источник
         Set src = XDoc.createElement("Источник")
