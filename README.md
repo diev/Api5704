@@ -4,7 +4,7 @@
 [![GitHub Release](https://img.shields.io/github/release/diev/Api5704.svg)](https://github.com/diev/Api5704/releases/latest)
 
 Передача сведений о среднемесячных платежах (ССП) по Указанию Банка
-России от 11.01.2021 № 5704-У «О порядке и форме предоставления сведений
+России от 11.01.2021 N 5704-У «О порядке и форме предоставления сведений
 о среднемесячных платежах субъекта кредитной истории, о порядке и форме
 запроса и предоставления квалифицированным бюро кредитных историй
 сведений, необходимых для подготовки сведений о среднемесячных платежах
@@ -19,7 +19,7 @@
 квалифицированными бюро кредитных историй с использованием программного
 интерфейса приложения (API) в целях предоставления сведений о
 среднемесячных платежах» публикуется в соответствии с пунктом 1.2
-Указания Банка России № 5704-У:
+Указания Банка России N 5704-У:
 
 <https://cbr.ru/ckki/transfer_inform/>
 
@@ -104,6 +104,31 @@
   * `%2` = подписанный файл XML.sig для отправки;
   * `%3` = будет подставлено значение `MyThumbprint` для выбора
 сертификата в Хранилище для подписи.
+
+Пример рабочего конфига:
+
+```json
+{
+  "MyThumbprint": "2756273e9e3c99ee435ffeaa79505b10214321c8",
+  "VerboseClient": true,
+  "ServerAddress": "https://ssp.nbki.ru/qbch/",
+  "ServerThumbprint": "18042E6D06AE9F05B639DF511A8583FEDE72784D",
+  "ValidateTls": true,
+  "ValidateThumbprint": false,
+  "VerboseServer": true,
+  "UseProxy": false,
+  "ProxyAddress": "http://192.168.2.1:3128",
+  "SignFile": true,
+  "CleanSign": true,
+  "MaxRetries": 10,
+  "DirSource": "OUT\\*.xml",
+  "DirRequests": "Requests\\{name}.{date}.{guid}.request.xml",
+  "DirResults": "Results\\{name}.{date}.{guid}.result.xml",
+  "DirAnswers": "Answers\\{name}.{date}.{guid}.answer.xml",
+  "CspTest": "C:\\Program Files\\Crypto Pro\\CSP\\csptest.exe",
+  "CspTestSignFile": "-sfsign -sign -in %1 -out %2 -my %3 -add -addsigtime"
+}
+```
 
 ## Usage
 
@@ -190,16 +215,17 @@
 ## Расширение API дополнительными командами
 
 Отправка запроса (`dlrequest`), получение квитанции и сведений
-(`dlanswer`) за один запуск - команда `auto`:
+(`dlanswer`), создание текстового отчета (`report`) за один запуск -
+команда `auto`:
 
-    Api5704 AUTO request.xml result.xml answer.xml
+    Api5704 AUTO request.xml result.xml answer.xml report.txt
 
 Пакетная обработка запросов (`auto`) из папки за один запуск -
 команда `dir` (это и действие по умолчанию, если параметров не указано
 вовсе, но есть папка `DirSource` в конфиге, а также там указаны папки
 `DirRequest`, `DirResult`, `DirAnswer`):
 
-    Api5704 DIR source request result answer
+    Api5704 DIR source request result answer report
     Api5704
 
 где:
@@ -215,6 +241,8 @@
 переименованные по аналогичной маске `ФИО.yyyy-MM-dd.guid.result.xml`;
 - `answer` - папка, куда будут сложены полученные сведения,
 переименованные по аналогичной маске `ФИО.yyyy-MM-dd.guid.answer.xml`.
+- `report` - папка, куда будет положен сводный отчет по полученным сведениям,
+переименованный по аналогичной маске `ФИО.yyyy-MM-dd.guid.answer.xml.txt`.
 
 После получения файла в папке `answer`, соответствующий ему исходный
 файл будет считаться обработанным и удален из папки `source`, при этом
@@ -252,13 +280,17 @@
 ## Requirements
 
 * .NET 8
+* .NET 9
+* CryptoPro CSP
+* Microsoft Excel
 
 ## Versioning
 
 Номер версии программы указывается по нарастающему принципу и строится
-от актуальной версии .NET на момент разработки и даты редакции:
+от максимальной протестированной версии .NET на момент разработки и даты
+редакции:
 
-* Актуальная версия .NET (8);
+* Актуальная версия .NET (9);
 * Год текущей разработки (2024);
 * Месяц без первого нуля и день редакции (624 - 24.06.2024);
 * Номер билда, если указан - просто нарастающее число для внутренних отличий.

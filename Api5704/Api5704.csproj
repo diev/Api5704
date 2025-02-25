@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <RootNamespace>Api5704</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>8.2024.718</Version>
+    <Version>9.2024.1226</Version>
     <Company>diev</Company>
     <Copyright>2022-2024 Dmitrii Evdokimov</Copyright>
-    <Description>Предоставление ССП при обращении пользователя к НБКИ как КБКИ-контрагенту в режиме «одного окна» по Указанию Банка России № 5704-У.</Description>
+    <Description>Предоставление ССП при обращении пользователя к НБКИ как КБКИ-контрагенту в режиме «одного окна» по Указанию Банка России N 5704-У.</Description>
     <NeutralLanguage>ru-RU</NeutralLanguage>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Diev</Authors>

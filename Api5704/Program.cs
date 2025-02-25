@@ -18,6 +18,7 @@ limitations under the License.
 #endregion
 
 using static Api5704.Api;
+using static Api5704.ApiExtra;
 
 namespace Api5704;
 
@@ -39,10 +40,12 @@ internal class Program
 
                 if (Directory.Exists(dir))
                 {
-                    Console.WriteLine(@$"Параметры не указаны, но есть папка ""{dir}"".");
-                    // source requests results answers
+                    Console.WriteLine(
+                        @$"Параметры не указаны, но есть папка ""{dir}"".");
+                    // source requests results answers reports
                     result = await ApiExtra.PostRequestFolderAsync(source,
-                        Config.DirRequests, Config.DirResults, Config.DirAnswers);
+                        Config.DirRequests, Config.DirResults,
+                        Config.DirAnswers, Config.DirReports);
 
                     Environment.Exit(result);
                 }
@@ -62,14 +65,17 @@ internal class Program
                 case certrevoke:
                     if (args.Length != 5) Usage();
                     // id cert.cer sign.sig result.xml
-                    result = await PostCertAsync(cmd, args[1], args[2], args[3], args[4]);
+                    result = await PostCertAsync(cmd,
+                        args[1], args[2], args[3], args[4]);
                     break;
 
                 case dlput:
                 case dlrequest:
                     if (args.Length != 3) Usage();
                     // request.xml result.xml
-                    result = await PostRequestAsync(cmd, args[1], args[2]);
+                    var (Result, Xml) = await PostRequestAsync(cmd,
+                        args[1], args[2]);
+                    result = Result;
                     break;
 
                 case dlanswer:
@@ -77,26 +83,33 @@ internal class Program
                     if (args.Length != 3) Usage();
                     // id answer.xml
                     // result.xml answer.xml
-                    result = await GetAnswerAsync(cmd, args[1], args[2]);
+                    result = await GetAnswerAsync(cmd,
+                        args[1], args[2]);
                     break;
 
-                // Extra
+                // API Extra
                 case auto:
-                    if (args.Length != 3) Usage();
-                    // request.xml result.xml answer.xml
-                    result = await PostRequestAsync(cmd, args[1], args[2], args[3]);
+                    if (args.Length != 5) Usage();
+                    // request.xml result.xml answer.xml report.txt
+                    result = await AutoRequestAsync(cmd,
+                        args[1], args[2], args[3], args[4]);
+                    // answer xml -> txt
+                    result = await MakeReportAsync(
+                        args[3], args[4]);
                     break;
 
                 case dir:
-                    if (args.Length != 4) Usage();
-                    // source requests results answers
-                    result = await ApiExtra.PostRequestFolderAsync(args[1], args[2], args[3], args[4]);
+                    if (args.Length != 6) Usage();
+                    // source requests results answers reports
+                    result = await PostRequestFolderAsync(
+                        args[1], args[2], args[3], args[4], args[5]);
                     break;
 
                 case report:
                     if (args.Length != 3) Usage();
                     // answer xml -> txt
-                    result = await ApiExtra.MakeReportAsync(args[1], args[2]);
+                    result = await MakeReportAsync(
+                        args[1], args[2]);
                     break;
 
                 // Unknown
@@ -124,7 +137,9 @@ internal class Program
     private static void Usage()
     {
         string usage = @"
-Предоставление сведений о среднемесячных платежах субъектов кредитных историй:
+Предоставление сведений о среднемесячных платежах (ССП)
+субъектов кредитных историй:
+
     Api5704 запрос параметры
 
 Запросы API:
@@ -153,16 +168,18 @@ certrevoke  – отзыв сертификата абонента.
 
 Запросы расширенные:
 
-auto        - запрос (dlrequest) и получение (dlanswer) за один запуск.
+auto        - запрос (dlrequest) и получение (dlanswer) за один запуск,
+            создание текстового сводного отчета по полученным сведениям
+            XML (report).
 
-    Параметры: request.xml result.xml answer.xml
+    Параметры: request.xml result.xml answer.xml report.txt
 
 dir         - пакетная обработка запросов (auto) из папки.
             Это действие по умолчанию, если параметров не указано,
             но есть папка DirSource в конфиге.
             Подробнее см. в README.
 
-    Параметры: source request result answer
+    Параметры: source request result answer report
 
 report      - создание текстового сводного отчета по полученным
             сведениям XML.

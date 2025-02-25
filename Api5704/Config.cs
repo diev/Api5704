@@ -28,7 +28,7 @@ public class Config
     /// Отпечаток сертификата клиента, зарегистрированного на сервере в ЛК и
     /// имеющего допуск к серверу.
     /// </summary>
-    public string MyThumbprint { get; set; } = "8510d4c1d565f9d071f137cc145e166b3aa71cd9";
+    public string MyThumbprint { get; set; } = "2756273e9e3c99ee435ffeaa79505b10214321c8";
     
     /// <summary>
     /// Показывать дамп сертификата клиента при подключении.
@@ -109,16 +109,22 @@ public class Config
     public string DirRequests { get; set; } = @"Requests\{name}.{date}.{guid}.request.xml";
 
     /// <summary>
+    /// Архивная папка и шаблон имени для полученных файлов сведений
+    /// на отправленные запросы.
+    /// </summary>
+    public string DirAnswers { get; set; } = @"Answers\{name}.{date}.{guid}.answer.xml";
+
+    /// <summary>
     /// Архивная папка и шаблон имени для полученных файлов квитанций
     /// на отправленные запросы.
     /// </summary>
     public string DirResults { get; set; } = @"Results\{name}.{date}.{guid}.result.xml";
 
     /// <summary>
-    /// Архивная папка и шаблон имени для полученных файлов сведений
-    /// на отправленные запросы.
+    /// Архивная папка и шаблон имени для файлов сводного отчета
+    /// из полученных файлов квитанций (окончательный результат).
     /// </summary>
-    public string DirAnswers { get; set; } = @"Answers\{name}.{date}.{guid}.answer.xml";
+    public string DirReports { get; set; } = @"Results\{name}.{date}.{guid}.result.txt";
 
     /// <summary>
     /// Путь к утилите командной строки КриптоПро.
