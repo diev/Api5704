@@ -29,7 +29,13 @@ set option=4
 rem call :bin %1 %option% %prj% net8.0 linux-x64
 rem call :bin %1 %option% %prj% net9.0 linux-x64
 
-call :readme %1 %prj% > bin\version.txt
+for /f "tokens=3 delims=<>" %%v in ('findstr "<TargetFrameworks>" %prj%') do set targets=%%v
+for /f "tokens=3 delims=<>" %%v in ('findstr "<Version>" %prj%') do set version=%%v
+for /f "tokens=3 delims=<>" %%v in ('findstr "<Description>" %prj%') do set description="%%v"
+for %%i in (.) do set repo=%%~nxi
+call :lower %repo% repol
+
+call :readme > bin\version.txt
 
 set pack=%1-v%version%.zip
 if exist %pack% del %pack%
@@ -80,14 +86,7 @@ del %Temp%\%1
 goto :eof
 
 :readme
-rem %1 - app
-rem %2 - project.csproj
-for /f "tokens=3 delims=<>" %%v in ('findstr "<TargetFrameworks>" %2') do set targets=%%v
-for /f "tokens=3 delims=<>" %%v in ('findstr "<Version>" %2') do set version=%%v
-for /f "tokens=3 delims=<>" %%v in ('findstr "<Description>" %2') do set description=%%v
-for %%i in (.) do set repo=%%~nxi
-call :lower %repo% repol
-echo %1
+echo %app1%
 echo %description%
 echo.
 echo Version: v%version%
@@ -96,7 +95,7 @@ echo.
 echo NET:     %targets%
 echo Download from https://dotnet.microsoft.com/download
 echo.
-echo Run once to create "%1.config.json"
+echo Run once to create "%app1%.config.json"
 echo and correct it
 echo.
 echo https://github.com/diev/%repo%
