@@ -1,0 +1,51 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "dlrequest": {
+      "commandName": "Project",
+      "commandLineArgs": "dlrequest request.xml result.xml"
+    },
+    "dlanswer": {
+      "commandName": "Project",
+      "commandLineArgs": "dlanswer e700e32f-ce85-4f0a-9cee-31b8bc14a7a0\r\nanswer.xml"
+    },
+    "dlputanswer": {
+      "commandName": "Project",
+      "commandLineArgs": "dlputanswer 945cb186-0d50-45ff-8823-797942987638\r\nputanswer.xml"
+    },
+    "dlput": {
+      "commandName": "Project",
+      "commandLineArgs": "dlput qcb_put.xml.sig put.result.xml"
+    },
+    "certadd": {
+      "commandName": "Project",
+      "commandLineArgs": "certadd A6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer kontur.cer.sig\r\ncertadd.result.xml"
+    },
+    "certrevoke": {
+      "commandName": "Project",
+      "commandLineArgs": "certrevoke A6563526-A3F3-4D4E-A923-E41E93F1D921\r\nkontur.cer kontur.cer.sig\r\ncertrevoke.result.xml"
+    },
+    "dlanswer file": {
+      "commandName": "Project",
+      "commandLineArgs": "dlanswer result.xml answer2.xml"
+    },
+    "dlauto": {
+      "commandName": "Project",
+      "commandLineArgs": "dlauto request.xml result.xml answer3.xml"
+    },
+    "dlauto folders": {
+      "commandName": "Project",
+      "commandLineArgs": "dlauto requests results answers"
+    },
+    "no args but OUT": {
+      "commandName": "Project"
+    },
+    "report": {
+      "commandName": "Project",
+      "commandLineArgs": "report answer.xml report.txt"
+    }
+  }
+}

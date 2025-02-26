@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <RootNamespace>Api6775</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>9.2025.226</Version>
+    <Company>diev</Company>
+    <Copyright>2022-2025 Dmitrii Evdokimov</Copyright>
+    <Description>Получение сведений о ССП и СЗ при обращении банка к API КБКИ по Указанию Банка России N 6775-У (ранее 5704-У).</Description>
+    <NeutralLanguage>ru-RU</NeutralLanguage>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Diev</Authors>
+    <PackageProjectUrl>https://github.com/diev/Api5704</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/diev/Api5704.git</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+</Project>

@@ -1,7 +1,7 @@
 @echo off
 call :init
 
-set app1=Api5704
+set app1=Api6775
 
 call :pack %app1%
 exit /b 0
