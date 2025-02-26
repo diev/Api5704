@@ -29,7 +29,7 @@ set option=4
 rem call :bin %1 %option% %prj% net8.0 linux-x64
 rem call :bin %1 %option% %prj% net9.0 linux-x64
 
-call :version_txt %1 %prj% > bin\version.txt
+call :readme %1 %prj% > bin\version.txt
 
 set pack=%1-v%version%.zip
 if exist %pack% del %pack%
@@ -79,7 +79,7 @@ for /f %%f in ('dir /b/l %Temp%\%1') do set %2=%%f
 del %Temp%\%1
 goto :eof
 
-:version_txt
+:readme
 rem %1 - app
 rem %2 - project.csproj
 for /f "tokens=3 delims=<>" %%v in ('findstr "<TargetFrameworks>" %2') do set targets=%%v
