@@ -2,6 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/0rnoo3ra0mwyc327?svg=true)](https://ci.appveyor.com/project/diev/api5704)
 [![.NET8 Desktop](https://github.com/diev/Api5704/actions/workflows/dotnet8-desktop.yml/badge.svg)](https://github.com/diev/Api5704/actions/workflows/dotnet8-desktop.yml)
 [![.NET9 Desktop](https://github.com/diev/Api5704/actions/workflows/dotnet9-desktop.yml/badge.svg)](https://github.com/diev/Api5704/actions/workflows/dotnet9-desktop.yml)
+[![.NET Desktop](https://github.com/diev/Api5704/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/diev/Api5704/actions/workflows/dotnet-desktop.yml)
 [![GitHub Release](https://img.shields.io/github/release/diev/Api5704.svg)](https://github.com/diev/Api5704/releases/latest)
 
 Получение сведений о среднемесячных платежах (ССП) и сведений о самозапрете
