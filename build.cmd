@@ -22,7 +22,7 @@ rem call :bin %1 %option% %prj% net8.0 win-x86
 rem call :bin %1 %option% %prj% net9.0 win-x86
 
 call :bin %1 %option% %prj% net8.0 win-x64
-rem call :bin %1 %option% %prj% net9.0 win-x64
+call :bin %1 %option% %prj% net9.0 win-x64
 
 rem Linux
 set option=4
@@ -31,7 +31,9 @@ rem call :bin %1 %option% %prj% net9.0 linux-x64
 
 for /f "tokens=3 delims=<>" %%v in ('findstr "<TargetFrameworks>" %prj%') do set targets=%%v
 for /f "tokens=3 delims=<>" %%v in ('findstr "<Version>" %prj%') do set version=%%v
-for /f "tokens=3 delims=<>" %%v in ('findstr "<Description>" %prj%') do set description="%%v"
+for /f "tokens=3 delims=<>" %%v in ('findstr "<Description>" %prj%') do set description=%%v
+rem Use "" if the .proj description has parentheses!
+rem for /f "tokens=3 delims=<>" %%v in ('findstr "<Description>" %prj%') do set description="%%v"
 for %%i in (.) do set repo=%%~nxi
 call :lower %repo% repol
 

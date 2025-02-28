@@ -1,7 +1,7 @@
 Attribute VB_Name = "HashModule"
 Option Explicit
 
-'Редакция: 2024-07-10
+'Редакция: 2025-02-28
 
 Const UTIL As String = "C:\Program Files (x86)\Crypto Pro\CSP\cpverify.exe"
 Const ARGS As String = " -logfile %2 -mk -alg GR3411_2012_256 %1"
@@ -37,7 +37,7 @@ Public Sub ReadHash()
     Answer = InputBox(Txt & vbCrLf & "скопируйте и вставьте", "ХэшКод", Hash)
 End Sub
 
-Public Function GetHash(Pdf) As String
+Public Function GetHash(Pdf As String) As String
     Dim cmd As String, Txt As String, s As String
     Dim fn As Integer
     
