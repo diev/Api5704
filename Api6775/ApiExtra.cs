@@ -383,7 +383,7 @@ public static class ApiExtra
                 report = report.Replace("{guid}", guid);
             }
 
-            await AutoRequestAsync(source, request, result, answer, report);
+            await AutoRequestAsync(file, request, result, answer, report);
 
             //File.Copy(file, request, true);
 
